@@ -1,0 +1,24 @@
+.locker-card {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 300px;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    color: #333;
+    margin: 10px 0;
+    transition: background-color 0.3s;
+    width: 300px;
+}
+
+.locker-card:active {
+    background-color: #e0e0e0; /* Dimmed background color */
+}
+
+.locker-card:hover {
+    transform: translateY(-2px);
+    cursor: pointer;
+}

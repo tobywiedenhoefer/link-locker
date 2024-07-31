@@ -1,0 +1,28 @@
+.link-card {
+  background-color: #fff;
+  padding: 16px;
+  text-align: center;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  transition: background-color 0.3s;
+}
+
+.link-card-text {
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.link-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+}
+
+.link-card:hover {
+  transform: translateY(-2px);
+}
+
+.link-card:active {
+  background-color: #e0e0e0;
+}

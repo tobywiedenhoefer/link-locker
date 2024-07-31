@@ -1,0 +1,27 @@
+.link-cards-container {
+  display: grid;
+  gap: 16px;
+  padding: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+/* Mobile styles */
+@media (max-width: 767px) {
+  .link-cards-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Desktop styles */
+@media (min-width: 768px) {
+  .link-cards-container {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.search-bar-row {
+  padding: 1.5rem 0 0.5rem 0;
+  display: flex;
+  justify-content: space-evenly;
+  margin: 0 auto;
+}

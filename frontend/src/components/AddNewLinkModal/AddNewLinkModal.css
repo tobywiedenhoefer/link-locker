@@ -1,0 +1,144 @@
+.form-name {
+    font-size: 2em;
+    font-weight: bold;
+    text-decoration: none;
+    color: inherit;
+}
+
+.form-fields {
+    padding: 1rem 0 1rem 0;
+}
+
+.form-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem 1rem 1rem 1rem;
+}
+
+
+.form-row input {
+    width: 100%;
+    padding: 0.5rem 1rem;
+    background: none;
+    outline: none;
+    font-size: 1em;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+}
+
+.radio-buttons {
+    width: 70%;
+    align-items: center;
+    justify-content: space-between;
+    display: flex;
+}
+
+.radio-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 50%;
+}
+
+.radio-button input[type=radio] {
+    border: 0px;
+    width: 100%;
+    height: 1em
+}
+
+.radio-button label {
+    font-size: 1rem;
+    padding: 0.5rem 0.25rem 0rem 0.25rem;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    color: gray
+}
+
+.form-row p {
+    font-size: 1.2em;
+    display: flex;
+    text-align: center;
+    justify-content: left;
+    align-items: center;
+}
+
+.form-input {
+    width: 70%;
+    display: flex;
+    flex-direction: column
+}
+.form-input label {
+    position: absolute;
+    transform: translateY(1.8rem) translateX(1rem);
+    background-color: white;
+    padding: 0 0.25rem 0 0.25rem;
+    font-size: 0.9rem;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    color: gray;
+}
+
+.row-title {
+    flex: 1;
+    display: flex;
+    text-wrap:nowrap;
+    text-align: left;
+    overflow:auto;
+}
+
+.submit-button-wrapper {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.submit-form-button {
+    border: 1px solid #ddd;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 1.2em;
+    color: #333;
+    margin: 10px 0;
+    padding: 0.5rem;
+    transition: background-color 0.3s;
+}
+
+.submit-form-button:active {
+    background-color: #e0e0e0;
+}
+
+.submit-form-button:hover {
+    transform: translateY(-2px);
+}
+
+.submit-form-button:disabled {
+    background-color: #e0e0e0;
+    transition: none;
+}
+
+.submit-form-button:disabled:hover {
+    transform: none;
+}
+
+@media (max-width: 767px) {
+    .form-input {
+        width: 60%;
+    }
+    .form-input p {
+        width: 40%;
+    }
+    .radio-buttons {
+        width: 60%;
+    }
+}
+

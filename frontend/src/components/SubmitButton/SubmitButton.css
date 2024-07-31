@@ -1,0 +1,38 @@
+.submit-button-wrapper {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.submit-form-button {
+    border: 1px solid #ddd;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 1.2em;
+    color: #333;
+    margin: 10px 0;
+    padding: 0.5rem;
+    transition: background-color 0.3s;
+}
+
+.submit-form-button:active {
+    background-color: #e0e0e0;
+}
+
+.submit-form-button:hover {
+    transform: translateY(-2px);
+}
+
+.submit-form-button:disabled {
+    background-color: #e0e0e0;
+    transition: none;
+}
+
+.submit-form-button:disabled:hover {
+    transform: none;
+}
