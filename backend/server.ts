@@ -5,7 +5,7 @@ import { createUserRoutes } from "./routes/create-user.ts";
 
 import publicRoutes from "./constants/publicRoutes.ts";
 import validBearerToken from "./validBearerToken.ts";
-import { db } from "./database/db.ts";
+import { userRoutes } from "./routes/user.ts";
 
 const app: Express = express();
 
@@ -25,6 +25,7 @@ app.use((req, res, next) => {
 
 app.use("/api/links", linksRoutes);
 app.use("/api/create-user", createUserRoutes);
+app.use("/api/user/", userRoutes);
 
 app.listen(Bun.env.PORT, () => {
   console.log("port: ", Bun.env.PORT);

@@ -11,8 +11,12 @@ export enum ErrorCodes {
   CoulsNotFindLinks = 10,
   CacheExpiredOrNotSet = 11,
   // backend errors
-  BearerTokenNotPresent = 12,
-  UnexpectedErrorRaised = 13,
-  IncorrectRequest = 14,
-  UnexpectedErrorRaisedWhileHashingPassword = 15,
+  BearerTokenNotPresent = 112,
+  UnexpectedErrorRaised = 113,
+  IncorrectRequest = 114,
+  UnexpectedErrorRaisedWhileHashingPassword = 115,
+  UnexpectedErrorRaisedWhileCreatingUser = 116,
+  CouldNotFindUserIdInDatabase = 117,
+  CouldNotFindUsernameInDatabase = 118,
+  PasswordDoesNotMatchHash = 119,
 }
