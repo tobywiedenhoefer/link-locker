@@ -10,53 +10,57 @@ export function generateUUID() {
   );
 }
 
+export function generateRandomNumber() {
+  return Math.floor(100000 + Math.random() * 900000);
+}
+
 const useMockData = true;
 const useMockUser = false;
-const mockUserUUID = generateUUID();
+const mockUserUUID = generateRandomNumber();
 
 const mockLockers: Array<Locker> = [
   {
-    id: generateUUID(),
+    id: generateRandomNumber(),
     uid: mockUserUUID,
     name: "Search Engines",
     locked: false,
   },
   {
-    id: generateUUID(),
+    id: generateRandomNumber(),
     uid: mockUserUUID,
     name: "Dumb Engines",
     locked: false,
   },
 ];
 
-const mockLinks: { [k: string]: Array<Link> } = {
+const mockLinks: { [k: number]: Array<Link> } = {
   [mockLockers[0].id]: [
     {
-      id: generateUUID(),
+      id: generateRandomNumber(),
       url: "https://www.google.com",
       name: "Google",
       tags: ["search", "faang"],
     },
     {
-      id: generateUUID(),
+      id: generateRandomNumber(),
       url: "https://www.reddit.com",
       name: "Reddit",
       tags: ["reddit", "good-google"],
     },
     {
-      id: generateUUID(),
+      id: generateRandomNumber(),
       url: "https://www.google.com",
       name: "Evil Google",
       tags: ["search", "faang"],
     },
     {
-      id: generateUUID(),
+      id: generateRandomNumber(),
       url: "https://www.reddit.com",
       name: "Evil Reddit",
       tags: ["evil-reddit", "evil-good-google"],
     },
     {
-      id: generateUUID(),
+      id: generateRandomNumber(),
       url: "https://github.com",
       name: "GitHub",
       tags: [
@@ -71,13 +75,13 @@ const mockLinks: { [k: string]: Array<Link> } = {
   ],
   [mockLockers[1].id]: [
     {
-      id: generateUUID(),
+      id: generateRandomNumber(),
       url: "https://www.bing.com",
       name: "Bing!",
       tags: ["bing", "wallpapers"],
     },
     {
-      id: generateUUID(),
+      id: generateRandomNumber(),
       url: "https://www.x.com",
       name: "Twitter",
       tags: ["never-x", "tweets", "twitter"],
@@ -87,14 +91,14 @@ const mockLinks: { [k: string]: Array<Link> } = {
 
 const mockLockedLockers: Array<Locker> = [
   {
-    id: generateUUID(),
+    id: generateRandomNumber(),
     uid: mockUserUUID,
     name: "Gifts",
     locked: true,
     combination: "1234",
   },
   {
-    id: generateUUID(),
+    id: generateRandomNumber(),
     uid: mockUserUUID,
     name: "Non-Gifts",
     locked: true,
@@ -102,16 +106,16 @@ const mockLockedLockers: Array<Locker> = [
   },
 ];
 
-const mockLockedLinks: { [k: string]: Array<Link> } = {
+const mockLockedLinks: { [k: number]: Array<Link> } = {
   [mockLockedLockers[0].id]: [
     {
-      id: generateUUID(),
+      id: generateRandomNumber(),
       url: "https://www.amazon.com",
       name: "Amazon",
       tags: ["credit-card", "shopping"],
     },
     {
-      id: generateUUID(),
+      id: generateRandomNumber(),
       url: "https://www.amazon.com/in",
       name: "Amazon India",
       tags: ["india", "amazon"],
@@ -119,7 +123,7 @@ const mockLockedLinks: { [k: string]: Array<Link> } = {
   ],
   [mockLockedLockers[1].id]: [
     {
-      id: generateUUID(),
+      id: generateRandomNumber(),
       url: "https://www.tesla.com",
       name: "Tesla",
       tags: ["tesla", "car", "guilty"],

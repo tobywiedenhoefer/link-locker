@@ -1,6 +1,6 @@
 type Locker = {
-  id: string;
-  uid: string | null;
+  id: number;
+  uid: number;
   name: string;
 } & (StandardLocker | LockedLocker);
 

@@ -33,7 +33,7 @@ export default function SearchLockedLockersModal(
   const [workflow, setWorkflow] = useState<SubmissionWorkflow>(
     SubmissionWorkflow.default
   );
-  const [nextLocker, setNextLocker] = useState<string | undefined>();
+  const [nextLocker, setNextLocker] = useState<number | undefined>();
 
   useEffect(() => {
     switch (workflow) {

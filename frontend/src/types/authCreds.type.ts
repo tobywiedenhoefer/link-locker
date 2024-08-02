@@ -1,6 +1,6 @@
 type AuthCreds = {
-  token: string | null;
-  uid?: string;
+  token: number | null;
+  uid?: number;
 };
 
 export default AuthCreds;

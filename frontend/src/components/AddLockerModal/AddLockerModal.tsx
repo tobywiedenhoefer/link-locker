@@ -34,9 +34,9 @@ export default function AddLockerModal(props: AddLockerModalProps) {
       case "submitting": {
         (async () => {
           const newLocker: Locker = {
-            id: "",
+            id: -1,
             name: formFields.name,
-            uid: null,
+            uid: -1,
             locked: formFields.locked,
             combination: formFields.combination,
           };

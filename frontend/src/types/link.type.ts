@@ -1,5 +1,5 @@
 type Link = {
-  id: string;
+  id: number;
   url: string;
   name: string;
   tags: Array<string>;

@@ -1,4 +1,7 @@
-import mockData, { generateUUID } from "../constants/mockData";
+import mockData, {
+  generateUUID,
+  generateRandomNumber,
+} from "../constants/mockData";
 import {
   ErrorCodes,
   CombinationNotFoundError,
@@ -32,7 +35,7 @@ export async function getLockers(
 export async function getLockedLocker(
   token: string | null,
   combination: string
-): Promise<ApiResponse<string>> {
+): Promise<ApiResponse<number>> {
   let locker: Locker | undefined;
   if (mockData.use) {
     for (let _locker in mockData.locked.lockers) {
@@ -59,7 +62,7 @@ export async function getLockedLocker(
 }
 
 export async function getLinks(
-  lockerId: string | undefined
+  lockerId: number | undefined
 ): Promise<ApiResponse<Link[]>> {
   /** Gets all non-locked links for specified locker */
   let links: Array<Link> | undefined;
@@ -88,11 +91,11 @@ export async function getLinks(
 }
 
 export async function getLockedLinks(
-  lockerId: string | undefined,
+  lockerId: number | undefined,
   state: LockerState
 ): Promise<ApiResponse<Link[]>> {
   /** Gets all links for a locker with the same unique combination */
-  if (typeof lockerId === "undefined" || lockerId.length === 0) {
+  if (typeof lockerId === "undefined" || lockerId <= 0) {
     return {
       success: false,
       errorCode: ErrorCodes.InvalidLockerId,
@@ -128,11 +131,11 @@ export async function getLockedLinks(
 
 export async function addNewLink(
   token: string | null,
-  lockerId: string,
+  lockerId: number,
   link: Link
-): Promise<ApiResponse<string>> {
+): Promise<ApiResponse<number>> {
   if (mockData.use) {
-    return { success: true, payload: generateUUID() };
+    return { success: true, payload: generateRandomNumber() };
   }
   return {
     success: false,
@@ -145,11 +148,11 @@ export async function addNewLink(
 export async function addNewLocker(
   token: string | null,
   locker: Locker
-): Promise<ApiResponse<string>> {
+): Promise<ApiResponse<number>> {
   if (mockData.use) {
     const newLocker: Locker = {
       ...locker,
-      id: generateUUID(),
+      id: generateRandomNumber(),
     };
     const lockerType: keyof typeof mockData = locker.locked ? "locked" : "open";
     mockData[lockerType].lockers.push(newLocker);

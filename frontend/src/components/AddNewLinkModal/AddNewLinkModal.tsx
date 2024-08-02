@@ -39,12 +39,12 @@ export default function AddNewLinkModal(props: AddNewLinkModalProps) {
       case SubmissionWorkflow.submitting: {
         (async () => {
           const newLink: Link = {
-            id: "",
+            id: -1,
             name: formFields.name,
             url: formFields.url,
             tags: formFields.tags,
           };
-          const resp = await addNewLink(token, "", newLink);
+          const resp = await addNewLink(token, -1, newLink);
           if (resp.success) {
             props.handleSubmit({ ...newLink, id: resp.payload });
             setWorkflow(SubmissionWorkflow.default);

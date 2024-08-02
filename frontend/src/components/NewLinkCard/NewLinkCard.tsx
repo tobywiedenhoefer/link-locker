@@ -2,7 +2,7 @@ import { useState } from "react";
 import { IconPlus } from "@tabler/icons-react";
 
 import AddNewLinkModal from "../AddNewLinkModal/AddNewLinkModal";
-import Link from "src/types/link.type";
+import Link from "../../types/link.type";
 
 import "./NewLinkCard.css";
 import "../LinkCard/LinkCard.css";
