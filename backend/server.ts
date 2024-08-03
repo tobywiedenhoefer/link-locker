@@ -1,11 +1,13 @@
 import express, { Express } from "express";
 
 import { linksRoutes } from "./routes/links.ts";
-import { createUserRoutes } from "./routes/create-user.ts";
 
 import publicRoutes from "./constants/publicRoutes.ts";
-import validBearerToken from "./validBearerToken.ts";
+import { createUserRoutes } from "./routes/create-user.ts";
 import { userRoutes } from "./routes/user.ts";
+import { lockersRoutes } from "./routes/lockers.ts";
+
+import validBearerToken from "./validBearerToken.ts";
 
 const app: Express = express();
 
@@ -26,6 +28,7 @@ app.use((req, res, next) => {
 app.use("/api/links", linksRoutes);
 app.use("/api/create-user", createUserRoutes);
 app.use("/api/user/", userRoutes);
+app.use("/api/lockers/", lockersRoutes);
 
 app.listen(Bun.env.PORT, () => {
   console.log("port: ", Bun.env.PORT);
