@@ -36,7 +36,7 @@ export default function AddLockerModal(props: AddLockerModalProps) {
           const newLocker: Locker = {
             id: -1,
             name: formFields.name,
-            uid: -1,
+            user_id: -1,
             locked: formFields.locked,
             combination: formFields.combination,
           };

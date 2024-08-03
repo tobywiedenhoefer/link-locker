@@ -21,13 +21,13 @@ const mockUserUUID = generateRandomNumber();
 const mockLockers: Array<Locker> = [
   {
     id: generateRandomNumber(),
-    uid: mockUserUUID,
+    user_id: mockUserUUID,
     name: "Search Engines",
     locked: false,
   },
   {
     id: generateRandomNumber(),
-    uid: mockUserUUID,
+    user_id: mockUserUUID,
     name: "Dumb Engines",
     locked: false,
   },
@@ -92,14 +92,14 @@ const mockLinks: { [k: number]: Array<Link> } = {
 const mockLockedLockers: Array<Locker> = [
   {
     id: generateRandomNumber(),
-    uid: mockUserUUID,
+    user_id: mockUserUUID,
     name: "Gifts",
     locked: true,
     combination: "1234",
   },
   {
     id: generateRandomNumber(),
-    uid: mockUserUUID,
+    user_id: mockUserUUID,
     name: "Non-Gifts",
     locked: true,
     combination: "5678",
