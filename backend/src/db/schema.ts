@@ -38,6 +38,23 @@ export const lockersTable = pgTable("lockers", {
   combination: varchar("combination"),
 });
 
+export const linksTable = pgTable("links", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  url: text("url").notNull(),
+  name: text("name").notNull(),
+  locker_id: integer("locker_id").references(() => lockersTable.id, {
+    onDelete: "cascade",
+  }),
+});
+
+export const tagsTable = pgTable("tags", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  name: text("name").notNull(),
+  link_id: integer("link_id").references(() => linksTable.id, {
+    onDelete: "cascade",
+  }),
+});
+
 export type InsertUser = typeof usersTable.$inferInsert;
 export type SelectUser = typeof usersTable.$inferSelect;
 
@@ -46,3 +63,9 @@ export type SelectToken = typeof tokensTable.$inferSelect;
 
 export type InsertLocker = typeof lockersTable.$inferInsert;
 export type SelectLocker = typeof lockersTable.$inferSelect;
+
+export type InsertLink = typeof linksTable.$inferInsert;
+export type SelectLink = typeof linksTable.$inferSelect;
+
+export type InsertTag = typeof tagsTable.$inferInsert;
+export type SelectTag = typeof tagsTable.$inferSelect;
