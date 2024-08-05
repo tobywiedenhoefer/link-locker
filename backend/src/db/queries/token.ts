@@ -19,13 +19,13 @@ export async function getUnexpiredTokensCount(tokenId: number) {
     );
 }
 
-export async function getUnexpiredTokens(tokenId: number) {
+export async function getUnexpiredTokens(tokenId: string) {
   return await db
     .select()
     .from(tokensTable)
     .where(
       and(
-        eq(tokensTable.id, tokenId),
+        eq(tokensTable.token, tokenId),
         between(
           tokensTable.created_at,
           sql`now() - interval '30 minutes'`,
