@@ -1,7 +1,4 @@
-import mockData, {
-  generateUUID,
-  generateRandomNumber,
-} from "../constants/mockData";
+import mockData, { generateRandomNumber } from "../constants/mockData";
 import {
   ErrorCodes,
   CombinationNotFoundError,
@@ -14,6 +11,37 @@ import ApiResponse from "../types/apiResponse.type";
 import Locker from "../types/locker.type";
 import AuthCreds from "../types/authCreds.type";
 import axios from "axios";
+
+const baseUrl = `${Bun.env.API_URL || ""}:${Bun.env.API_PORT || ""}/api`;
+
+async function getUserId(token: string | null): Promise<ApiResponse<number>> {
+  if (!token) {
+    return {
+      success: false,
+      errorCode: ErrorCodes.IncorrectRequestFormat,
+      errorMessage: `Incorrect request format, token (${token}) must be a valid string.`,
+    };
+  }
+  const resp = await axios.get<ApiResponse<number>>(
+    `${baseUrl}/token/userid/${token}`,
+    {}
+  );
+  if (resp.status !== 200 || !resp.data.success) {
+    return {
+      success: false,
+      errorCode: !resp.data?.success
+        ? resp.data.errorCode
+        : ErrorCodes.CacheExpiredOrNotSet,
+      errorMessage: !resp.data?.success
+        ? resp.data.errorMessage
+        : `Cache expired/not set for ${token}`,
+    };
+  }
+  return {
+    success: true,
+    payload: resp.data.payload,
+  };
+}
 
 export async function getLockers(
   token: string | null

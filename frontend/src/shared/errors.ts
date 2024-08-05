@@ -10,6 +10,7 @@ export enum ErrorCodes {
   CouldNotFindLockers = 9,
   CoulsNotFindLinks = 10,
   CacheExpiredOrNotSet = 11,
+  IncorrectRequestFormat = 12,
 }
 
 export class CombinationNotFoundError extends Error {
