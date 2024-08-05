@@ -46,18 +46,36 @@ async function getUserId(token: string | null): Promise<ApiResponse<number>> {
 export async function getLockers(
   token: string | null
 ): Promise<ApiResponse<Locker[]>> {
-  /** Gets all non-locked lockers for the user */
+  /** Uses bearer token to gather all lockers for the associated token's user.*/
   if (mockData.use) {
     return {
       success: true,
       payload: mockData.open.lockers,
     };
   }
-  return {
-    success: false,
-    errorCode: ErrorCodes.CouldNotFindLockers,
-    errorMessage: "Could not find lockers",
-  };
+
+  const foundUserId = await getUserId(token);
+  if (!foundUserId.success) {
+    return foundUserId;
+  }
+
+  const resp = await axios.get<ApiResponse<Locker[]>>(
+    `${baseUrl}/lockers/${foundUserId.payload}`,
+    {}
+  );
+
+  if (resp.status !== 200 || !resp.data?.success) {
+    return {
+      success: false,
+      errorCode: !resp.data?.success
+        ? resp.data.errorCode
+        : ErrorCodes.CouldNotFindLockers,
+      errorMessage: !resp.data?.success
+        ? resp.data.errorMessage
+        : "Could not find lockers.",
+    };
+  }
+  return resp.data;
 }
 
 export async function getLockedLocker(
