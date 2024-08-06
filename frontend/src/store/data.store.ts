@@ -14,7 +14,9 @@ import axios from "axios";
 
 const baseUrl = `${Bun.env.API_URL || ""}:${Bun.env.API_PORT || ""}/api`;
 
-async function getUserId(token: string | null): Promise<ApiResponse<number>> {
+async function getUserIdFromToken(
+  token: string | null
+): Promise<ApiResponse<number>> {
   if (!token) {
     return {
       success: false,
@@ -54,7 +56,7 @@ export async function getLockers(
     };
   }
 
-  const foundUserId = await getUserId(token);
+  const foundUserId = await getUserIdFromToken(token);
   if (!foundUserId.success) {
     return foundUserId;
   }
@@ -64,15 +66,11 @@ export async function getLockers(
     {}
   );
 
-  if (resp.status !== 200 || !resp.data?.success) {
+  if (resp.status !== 200 && !resp.data?.success) {
     return {
       success: false,
-      errorCode: !resp.data?.success
-        ? resp.data.errorCode
-        : ErrorCodes.CouldNotFindLockers,
-      errorMessage: !resp.data?.success
-        ? resp.data.errorMessage
-        : "Could not find lockers.",
+      errorCode: resp.data?.errorCode || ErrorCodes.CouldNotFindLockers,
+      errorMessage: resp.data?.errorMessage || "Could not find lockers.",
     };
   }
   return resp.data;
@@ -94,17 +92,39 @@ export async function getLockedLocker(
         break;
       }
     }
+    return !!locker
+      ? {
+          success: true,
+          payload: locker.id,
+        }
+      : {
+          success: false,
+          errorCode: ErrorCodes.CouldNotUnlock,
+          errorMessage: "Could not unlock.",
+        };
   }
-  return !!locker
-    ? {
-        success: true,
-        payload: locker.id,
-      }
-    : {
-        success: false,
-        errorCode: ErrorCodes.CouldNotUnlock,
-        errorMessage: "Could not unlock.",
-      };
+
+  const userIdApiResponse = await getUserIdFromToken(token);
+  if (!userIdApiResponse.success) {
+    return userIdApiResponse;
+  }
+
+  const resp = await axios.post<ApiResponse<Locker["id"]>>(
+    `${baseUrl}/lockers/locked`,
+    {
+      userId: userIdApiResponse.payload,
+      combination: combination,
+    }
+  );
+
+  if (!resp.data?.success) {
+    return {
+      success: false,
+      errorCode: resp.data?.errorCode || ErrorCodes.CouldNotFindLockers,
+      errorMessage: resp.data?.errorMessage || "Could not find locker.",
+    };
+  }
+  return resp.data;
 }
 
 export async function getLinks(
