@@ -18,5 +18,6 @@ export enum ErrorCodes {
   UnexpectedErrorRaisedWhileCreatingUser = 116,
   CouldNotFindUserIdInDatabase = 117,
   CouldNotFindUsernameInDatabase = 118,
-  PasswordDoesNotMatchHash = 119,
+  ProblemFindingLockerInDatabase = 119,
+  PasswordDoesNotMatchHash = 120,
 }

@@ -4,7 +4,10 @@ import { ErrorCodes } from "../constants/errors";
 import ApiResponse from "../types/ApiResponse.type";
 import Locker from "../types/locker.type";
 
-import { getLockersByUserId } from "../src/db/queries/lockers";
+import {
+  getLockedLockerByUserIdAndCombination,
+  getLockersByUserId,
+} from "../src/db/queries/lockers";
 
 const router = Router();
 
@@ -58,6 +61,70 @@ router.get("/:id", async (req, res) => {
     };
   }
   res.json(resp);
+});
+
+// post
+router.get("/locked/id", async (req, res) => {
+  /**
+   * Pass the user id and combination into the request body, returns a matching locked locker.
+   * Request body: {
+   *   userId: number,
+   *   combination: string
+   * }
+   * Response: {
+   *   success: true,
+   *   payload: Locker[]
+   * } | {
+   *   success: false,
+   *   errorCode: number,
+   *   errorMessage: string
+   * }
+   */
+  let resp: ApiResponse<Locker["id"]>;
+  let reqUserId: number;
+  let reqCombination: string;
+  try {
+    reqUserId = +req.body.userId;
+    reqCombination = req.body.combination;
+  } catch (_) {
+    reqUserId = NaN;
+    reqCombination = "";
+  }
+  if (Number.isNaN(reqUserId) || reqCombination.length === 0) {
+    resp = {
+      success: false,
+      errorCode: ErrorCodes.IncorrectRequest,
+      errorMessage: "Incorrect request format.",
+    };
+    res.json(resp);
+    return;
+  }
+
+  try {
+    const lockerRows = await getLockedLockerByUserIdAndCombination(
+      reqUserId,
+      reqCombination
+    );
+    if (lockerRows.length === 0) {
+      throw Error(
+        `Query failed for userId ${reqUserId} and combination ${reqCombination}`
+      );
+    } else if (!lockerRows[0].combination) {
+      throw Error("Matched locker has an invalid combination string.");
+    }
+    resp = {
+      success: true,
+      payload: lockerRows[0].id,
+    };
+  } catch (e) {
+    resp = {
+      success: false,
+      errorCode: ErrorCodes.ProblemFindingLockerInDatabase,
+      errorMessage: `Problem finding locked locker in databse: ${e}`,
+    };
+  }
+  res.json(resp);
+  return;
 });
 
 export { router as lockersRoutes };
