@@ -4,3 +4,5 @@ type Link = {
   name: string;
   tags: Array<string>;
 };
+
+export default Link;
