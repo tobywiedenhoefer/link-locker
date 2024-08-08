@@ -7,6 +7,8 @@ import ApiResponse from "../../types/apiResponse.type";
 import LockerState from "../../types/lockerState.type";
 import { filterLinkSubstring } from "../../shared/filterSearch";
 
+import { useAuth } from "../../contexts/AuthContext";
+
 import LinkCard from "../../components/LinkCard/LinkCard";
 import SearchBar from "../../components/SearchBar/SearchBar";
 import ViewLinkModal from "../../components/ViewLinkModal/ViewLinkModal";
@@ -19,6 +21,7 @@ export default function Locker() {
   const params = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const { token } = useAuth();
   const [links, setLinks] = useState<Array<Link>>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [showModal, setShowModal] = useState(false);
@@ -31,10 +34,10 @@ export default function Locker() {
   useEffect(() => {
     (async () => {
       const state: LockerState | null | undefined = location.state;
-      const lockerId = params?.locker;
+      const lockerId = params?.locker !== undefined ? +params?.locker : NaN;
       let resp: ApiResponse<Link[]>;
       if (typeof state === "undefined" || state === null) {
-        resp = await getLinks(lockerId);
+        resp = await getLinks(token, lockerId);
       } else {
         resp = await getLockedLinks(lockerId, state);
       }

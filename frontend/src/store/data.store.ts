@@ -128,32 +128,65 @@ export async function getLockedLocker(
 }
 
 export async function getLinks(
-  lockerId: number | undefined
+  token: string | null,
+  lockerId?: number
 ): Promise<ApiResponse<Link[]>> {
-  /** Gets all non-locked links for specified locker */
-  let links: Array<Link> | undefined;
-  if (typeof lockerId === "undefined") {
-    return {
-      success: false,
-      errorCode: ErrorCodes.InvalidLockerId,
-      errorMessage: `Invalid locker id: ${lockerId}`,
-    };
-  }
+  /** Uses bearer token to gather all all links for specified non-locked locker id. */
   if (mockData.use) {
-    if (mockData.open.links.hasOwnProperty(lockerId)) {
-      links = mockData.open.links[lockerId];
+    if (
+      lockerId !== undefined &&
+      mockData.open.links.hasOwnProperty(lockerId)
+    ) {
+      return {
+        success: true,
+        payload: mockData.open.links[lockerId],
+      };
+    } else {
+      return {
+        success: false,
+        errorCode: ErrorCodes.InvalidLockerId,
+        errorMessage: "Locker Id does not exist for user.",
+      };
     }
-  } else {
-    throw new NotImplementedError("");
   }
-  if (typeof links === "undefined") {
+
+  const foundUserId = await getUserIdFromToken(token);
+  if (!foundUserId.success) {
+    return foundUserId;
+  }
+
+  const lockerLinkedToUser = await axios.post(
+    `${baseUrl}/lockers/userOwnsLocker`,
+    {
+      userId: foundUserId.payload,
+      lockerId: lockerId,
+    }
+  );
+  if (lockerLinkedToUser.status !== 200 && !lockerLinkedToUser.data?.success) {
     return {
       success: false,
-      errorCode: ErrorCodes.LockerDoesNotExist,
-      errorMessage: "Locker does not exist for user.",
+      errorCode:
+        lockerLinkedToUser.data?.errorCode || ErrorCodes.InvalidLockerId,
+      errorMessage:
+        lockerLinkedToUser.data?.errorMessage ||
+        "LockerId not linked to userId.",
     };
   }
-  return { success: true, payload: links };
+
+  const linksResp = await axios.get(`${baseUrl}/links/${lockerId}`);
+  if (linksResp.status !== 200 && !linksResp.data?.success) {
+    return {
+      success: false,
+      errorCode:
+        linksResp.data?.errorCode ||
+        ErrorCodes.UnexpectedErrorRaisedDuringDBCall,
+      errorMessage:
+        linksResp.data?.errorMessage ||
+        "An unexpected error was raised while making a DB call.",
+    };
+  }
+
+  return linksResp.data;
 }
 
 export async function getLockedLinks(
