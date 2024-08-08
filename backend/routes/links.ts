@@ -3,7 +3,7 @@ import { Router } from "express";
 import ApiResponse from "../types/ApiResponse.type";
 import Link from "../types/link.type";
 import { ErrorCodes } from "../constants/errors";
-import { getLionksByLockerId } from "../src/db/queries/links";
+import { getLinksByLockerId } from "../src/db/queries/links";
 
 const router = Router();
 
@@ -33,7 +33,7 @@ router.get("/:id", async (req, res) => {
     return;
   }
   try {
-    const linkRows = await getLionksByLockerId(lockerId);
+    const linkRows = await getLinksByLockerId(lockerId);
     resp = {
       success: true,
       payload: linkRows.map((row) => {
