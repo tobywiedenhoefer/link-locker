@@ -6,6 +6,7 @@ import Locker from "../types/locker.type";
 
 import {
   getLockedLockerByUserIdAndCombination,
+  getLockerCountByUserIdAndLockerId,
   getLockersByUserId,
 } from "../src/db/queries/lockers";
 
@@ -64,7 +65,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // post
-router.get("/locked/id", async (req, res) => {
+router.post("/locked/id", async (req, res) => {
   /**
    * Pass the user id and combination into the request body, returns a matching locked locker.
    * Request body: {
@@ -115,6 +116,62 @@ router.get("/locked/id", async (req, res) => {
     resp = {
       success: true,
       payload: lockerRows[0].id,
+    };
+  } catch (e) {
+    resp = {
+      success: false,
+      errorCode: ErrorCodes.ProblemFindingLockerInDatabase,
+      errorMessage: `Problem finding locked locker in databse: ${e}`,
+    };
+  }
+  res.json(resp);
+  return;
+});
+
+router.post("/userOwnsLocker", async (req, res) => {
+  /**
+   * Pass the user id and combination into the request body, returns a boolean if userId owns the locker.
+   * Request body: {
+   *   userId: number,
+   *   lockerId: number
+   * }
+   * Response: {
+   *   success: true,
+   *   payload: boolean
+   * } | {
+   *   success: false,
+   *   errorCode: number,
+   *   errorMessage: string
+   * }
+   */
+  let resp: ApiResponse<boolean>;
+  let reqUserId: number;
+  let reqLockerId: number;
+  try {
+    reqUserId = +req.body.userId;
+    reqLockerId = +req.body.lockerId;
+  } catch (_) {
+    reqUserId = NaN;
+    reqLockerId = NaN;
+  }
+  if (Number.isNaN(reqUserId) || Number.isNaN(reqLockerId)) {
+    resp = {
+      success: false,
+      errorCode: ErrorCodes.IncorrectRequest,
+      errorMessage: "Incorrect request format.",
+    };
+    res.json(resp);
+    return;
+  }
+
+  try {
+    const [{ count }] = await getLockerCountByUserIdAndLockerId(
+      reqUserId,
+      reqLockerId
+    );
+    resp = {
+      success: true,
+      payload: !!count,
     };
   } catch (e) {
     resp = {

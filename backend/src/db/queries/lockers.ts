@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, count, eq } from "drizzle-orm";
 
 import { db } from "../db";
 import { SelectLocker, lockersTable } from "../schema";
@@ -32,10 +32,20 @@ export async function getLockedLockerByUserIdAndCombination(
     .from(lockersTable)
     .where(
       and(
-        eq(lockersTable.id, userId),
+        eq(lockersTable.user_id, userId),
         eq(lockersTable.locked, true),
         eq(lockersTable.combination, combination || "")
       )
     )
     .limit(1);
+}
+
+export async function getLockerCountByUserIdAndLockerId(
+  userId: SelectLocker["user_id"],
+  lockerId: SelectLocker["id"]
+): Promise<{ count: number }[]> {
+  return await db
+    .select({ count: count() })
+    .from(lockersTable)
+    .where(and(eq(lockersTable.id, userId), eq(lockersTable.id, lockerId)));
 }
