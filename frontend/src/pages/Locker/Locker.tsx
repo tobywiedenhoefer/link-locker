@@ -39,7 +39,7 @@ export default function Locker() {
       if (typeof state === "undefined" || state === null) {
         resp = await getLinks(token, lockerId);
       } else {
-        resp = await getLockedLinks(lockerId, state);
+        resp = await getLockedLinks(token, lockerId, state);
       }
       if (resp.success) {
         setLinks(resp.payload);

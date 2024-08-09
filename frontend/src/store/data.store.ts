@@ -194,24 +194,11 @@ export async function getLinks(
 }
 
 export async function getLockedLinks(
+  token: string | null,
   lockerId: number | undefined,
   state: LockerState
 ): Promise<ApiResponse<Link[]>> {
   /** Gets all links for a locker with the same unique combination */
-  if (typeof lockerId === "undefined" || lockerId <= 0) {
-    return {
-      success: false,
-      errorCode: ErrorCodes.InvalidLockerId,
-      errorMessage: `Invalid locker id: ${lockerId}`,
-    };
-  }
-  if (!isValidDate(state.date)) {
-    return {
-      success: false,
-      errorCode: ErrorCodes.CacheExpiredOrNotSet,
-      errorMessage: "Cache is expired",
-    };
-  }
   if (mockData.use) {
     for (const ind in mockData.locked.lockers) {
       const locker = mockData.locked.lockers[ind];
@@ -227,9 +214,26 @@ export async function getLockedLinks(
       }
     }
   }
-  throw new CombinationNotFoundError(
-    `Combination not found for ${state.combination}`
-  );
+
+  const userIdApiResponse = await getUserIdFromToken(token);
+  if (!userIdApiResponse.success) {
+    return userIdApiResponse;
+  }
+
+  const lockedLockerResp = await axios.post(`${baseUrl}/lockers/locked/id`, {
+    userId: userIdApiResponse.payload,
+    combination: state.combination,
+  });
+  if (!lockedLockerResp.data?.success) {
+    return {
+      success: false,
+      errorCode: lockedLockerResp.data?.errorCode || ErrorCodes.CouldNotUnlock,
+      errorMessage:
+        lockedLockerResp.data?.errorMessage || "Could not find/unlock locker.",
+    };
+  }
+
+  return await getLinks(token, lockerId);
 }
 
 export async function addNewLink(
