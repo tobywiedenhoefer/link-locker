@@ -129,7 +129,8 @@ export async function getLockedLocker(
 
 export async function getLinks(
   token: string | null,
-  lockerId?: number
+  lockerId?: number,
+  _userId?: number
 ): Promise<ApiResponse<Link[]>> {
   /** Uses bearer token to gather all all links for specified non-locked locker id. */
   if (mockData.use) {
@@ -149,16 +150,19 @@ export async function getLinks(
       };
     }
   }
-
-  const foundUserId = await getUserIdFromToken(token);
-  if (!foundUserId.success) {
-    return foundUserId;
+  let userId = _userId;
+  if (!userId) {
+    const foundUserId = await getUserIdFromToken(token);
+    if (!foundUserId.success) {
+      return foundUserId;
+    }
+    userId = foundUserId.payload;
   }
 
   const lockerLinkedToUser = await axios.post(
     `${baseUrl}/lockers/userOwnsLocker`,
     {
-      userId: foundUserId.payload,
+      userId: userId,
       lockerId: lockerId,
     }
   );
