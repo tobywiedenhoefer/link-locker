@@ -244,12 +244,27 @@ export async function addNewLink(
   if (mockData.use) {
     return { success: true, payload: generateRandomNumber() };
   }
-  return {
-    success: false,
-    errorCode: ErrorCodes.CouldNotAddNewLink,
-    errorMessage:
-      "We could not add a new link at this time. Please try again later.",
-  };
+
+  const foundUserId = await getUserIdFromToken(token);
+  if (!foundUserId.success) {
+    return foundUserId;
+  }
+
+  const addLinkResp = await axios.post(`${baseUrl}/links/add`, {
+    lockerId: lockerId,
+    name: link.name,
+    url: link.url,
+    tags: link.tags,
+  });
+  if (!addLinkResp.data.success) {
+    return {
+      success: false,
+      errorCode: addLinkResp.data?.errorCode || ErrorCodes.CouldNotAddNewLink,
+      errorMessage:
+        addLinkResp.data?.errorMessage || "Link could not be added.",
+    };
+  }
+  return addLinkResp.data;
 }
 
 export async function addNewLocker(
