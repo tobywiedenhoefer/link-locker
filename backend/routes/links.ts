@@ -4,6 +4,7 @@ import ApiResponse from "../types/ApiResponse.type";
 import Link from "../types/link.type";
 import { ErrorCodes } from "../constants/errors";
 import { addLink, getLinksByLockerId } from "../src/db/queries/links";
+import { addTagsByLinkId, getTagsByLinkId } from "../src/db/queries/tags";
 
 const router = Router();
 
@@ -34,16 +35,17 @@ router.get("/:id", async (req, res) => {
   }
   try {
     const linkRows = await getLinksByLockerId(lockerId);
+    const links: Link[] = [];
+    linkRows.forEach(async (row) => {
+      const tagsResp = (await getTagsByLinkId(row.id)).map((link) => link.name);
+      links.push({
+        ...row,
+        tags: tagsResp,
+      });
+    });
     resp = {
       success: true,
-      payload: linkRows.map((row) => {
-        return {
-          id: row.id,
-          url: row.url,
-          name: row.name,
-          tags: [],
-        };
-      }),
+      payload: links,
     };
   } catch (e) {
     resp = {
@@ -105,6 +107,7 @@ router.post("/add", async (req, res) => {
         errorMessage: "New link could not be added.",
       };
     } else {
+      await addTagsByLinkId(addLinkResp[0].newLinkId, req.body.tags);
       resp = {
         success: true,
         payload: addLinkResp[0].newLinkId,
