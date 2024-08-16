@@ -281,12 +281,29 @@ export async function addNewLocker(
     mockData[lockerType].links[newLocker.id] = [];
     return { success: true, payload: newLocker.id };
   }
-  return {
-    success: false,
-    errorCode: ErrorCodes.CouldNotAddNewLocker,
-    errorMessage:
-      "We could not add a new locker at this time. Please try again later.",
-  };
+
+  const userIdApiResponse = await getUserIdFromToken(token);
+  if (!userIdApiResponse.success) {
+    return userIdApiResponse;
+  }
+
+  const addLockerResp = await axios.post(`${baseUrl}/lockers/new`, {
+    userId: userIdApiResponse.payload,
+    name: locker.name,
+    locked: locker.locked,
+    combination: locker.locked ? locker.combination : "",
+  });
+  if (!addLockerResp.data?.success) {
+    return {
+      success: false,
+      errorCode:
+        addLockerResp.data?.errorCode || ErrorCodes.CouldNotAddNewLocker,
+      errorMessage:
+        addLockerResp.data?.errorMessage ||
+        "API ressponse is either undefined or unsuccessful, could not add a new locker.",
+    };
+  }
+  return addLockerResp.data;
 }
 
 export async function authenticateLogin(
