@@ -19,7 +19,9 @@ export async function getOpenLockersByUserId(
   return await db
     .select()
     .from(lockersTable)
-    .where(and(eq(lockersTable.id, userId), eq(lockersTable.locked, false)))
+    .where(
+      and(eq(lockersTable.user_id, userId), eq(lockersTable.locked, false))
+    )
     .limit(10);
 }
 
