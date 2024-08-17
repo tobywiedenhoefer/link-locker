@@ -1,5 +1,5 @@
 type AuthCreds = {
-  token: number | null;
+  token: string | null;
   uid?: number;
 };
 

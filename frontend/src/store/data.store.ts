@@ -315,16 +315,38 @@ export async function authenticateLogin(
     return {
       success: true,
       payload: {
-        token: mockData.uid,
+        token: mockData.token,
         uid: mockData.uid,
       },
     };
   }
+
+  if (!username || !password) {
+    return {
+      success: false,
+      errorCode: ErrorCodes.IncorrectRequestFormat,
+      errorMessage: "Incorrect request format.",
+    };
+  }
+
+  const createNewTokenResp = await axios.post(`${baseUrl}/user/login`, {
+    username: username,
+    password: password,
+  });
+  if (!createNewTokenResp.data.success) {
+    return {
+      success: false,
+      errorCode:
+        createNewTokenResp.data.errorCode || ErrorCodes.CouldNotLoginUser,
+      errorMessage:
+        createNewTokenResp.data.errorMessage || "Could not authenticate user.",
+    };
+  }
   return {
-    success: false,
-    errorCode: ErrorCodes.CouldNotLoginUser,
-    errorMessage:
-      "Could not login using the provided credentials. Please try again later.",
+    success: true,
+    payload: {
+      token: createNewTokenResp.data.payload,
+    },
   };
 }
 
