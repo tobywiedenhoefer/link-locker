@@ -1,7 +1,7 @@
 import { and, between, count, eq, sql } from "drizzle-orm";
 
 import { db } from "../db";
-import { tokensTable } from "../schema";
+import { InsertToken, tokensTable } from "../schema";
 
 export async function getUnexpiredTokensCount(tokenId: number) {
   return await db
@@ -33,4 +33,13 @@ export async function getUnexpiredTokens(tokenId: string) {
         )
       )
     );
+}
+
+export async function createNewTokenByUserId(userId: InsertToken["user_id"]) {
+  return await db
+    .insert(tokensTable)
+    .values({
+      user_id: userId,
+    })
+    .returning({ token: tokensTable.token });
 }

@@ -20,4 +20,5 @@ export enum ErrorCodes {
   CouldNotFindUsernameInDatabase = 118,
   ProblemFindingLockerInDatabase = 119,
   PasswordDoesNotMatchHash = 120,
+  DBQueryReturnedNonUniqueOrNoRows = 121,
 }

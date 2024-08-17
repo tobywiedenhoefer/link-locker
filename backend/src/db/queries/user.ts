@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 
 import { db } from "../db";
 import { SelectUser, usersTable } from "../schema";
@@ -16,4 +16,19 @@ export async function getUserByUsername(
     .select()
     .from(usersTable)
     .where(eq(usersTable.username, username));
+}
+
+export async function getUserIdByUsernameAndPasswordHash(
+  username: SelectUser["username"],
+  password_hash: SelectUser["password_hash"]
+) {
+  return await db
+    .select({ userId: usersTable.id })
+    .from(usersTable)
+    .where(
+      and(
+        eq(usersTable.username, username),
+        eq(usersTable.password_hash, password_hash)
+      )
+    );
 }
