@@ -17,6 +17,7 @@ export function generateRandomNumber() {
 const useMockData = true;
 const useMockUser = false;
 const mockUserUUID = generateRandomNumber();
+const mockUserToken = generateUUID();
 
 const mockLockers: Array<Locker> = [
   {
@@ -135,6 +136,7 @@ const mockData = {
   use: useMockData,
   useMockUser: useMockUser,
   uid: mockUserUUID,
+  token: mockUserToken,
   open: {
     lockers: mockLockers,
     links: mockLinks,
