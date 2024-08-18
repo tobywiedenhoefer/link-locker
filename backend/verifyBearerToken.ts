@@ -1,9 +1,11 @@
 import { ErrorCodes } from "./constants/errors";
 import ApiResponse from "./types/ApiResponse.type";
 
-export default function validBearerToken(
+import { getUnexpiredTokens } from "./src/db/queries/token";
+
+export default async function verifyBearerToken(
   auth?: string
-): ApiResponse<undefined> {
+): Promise<ApiResponse<number>> {
   if (!auth || !auth.includes(" ")) {
     return {
       success: false,
@@ -13,10 +15,17 @@ export default function validBearerToken(
   }
   try {
     const token = auth.split(" ")[1];
-    // check against server
+    const unexpiredTokensQuery = await getUnexpiredTokens(token)
+    if (unexpiredTokensQuery.length === 0) {
+      return {
+        success: false,
+        errorCode: ErrorCodes.CacheExpiredOrNotSet,
+        errorMessage: `Could not find a a bearer token that matches ${token}`
+      }
+    }
     return {
       success: true,
-      payload: undefined,
+      payload: unexpiredTokensQuery[0].user_id,
     };
   } catch (e) {
     return {

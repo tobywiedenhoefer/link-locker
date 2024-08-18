@@ -1,10 +1,5 @@
 import mockData, { generateRandomNumber } from "../constants/mockData";
-import {
-  ErrorCodes,
-  CombinationNotFoundError,
-  NotImplementedError,
-} from "../shared/errors";
-import { isValidDate } from "./date.store";
+import { ErrorCodes } from "../shared/errors";
 import Link from "../types/link.type";
 import LockerState from "../types/lockerState.type";
 import ApiResponse from "../types/apiResponse.type";
@@ -14,40 +9,7 @@ import axios from "axios";
 
 const baseUrl = `${Bun.env.API_URL || ""}:${Bun.env.API_PORT || ""}/api`;
 
-async function getUserIdFromToken(
-  token: string | null
-): Promise<ApiResponse<number>> {
-  if (!token) {
-    return {
-      success: false,
-      errorCode: ErrorCodes.IncorrectRequestFormat,
-      errorMessage: `Incorrect request format, token (${token}) must be a valid string.`,
-    };
-  }
-  const resp = await axios.get<ApiResponse<number>>(
-    `${baseUrl}/token/userid/${token}`,
-    {}
-  );
-  if (resp.status !== 200 || !resp.data.success) {
-    return {
-      success: false,
-      errorCode: !resp.data?.success
-        ? resp.data.errorCode
-        : ErrorCodes.CacheExpiredOrNotSet,
-      errorMessage: !resp.data?.success
-        ? resp.data.errorMessage
-        : `Cache expired/not set for ${token}`,
-    };
-  }
-  return {
-    success: true,
-    payload: resp.data.payload,
-  };
-}
-
-export async function getLockers(
-  token: string | null
-): Promise<ApiResponse<Locker[]>> {
+export async function getLockers(): Promise<ApiResponse<Locker[]>> {
   /** Uses bearer token to gather all lockers for the associated token's user.*/
   if (mockData.use) {
     return {
@@ -56,15 +18,7 @@ export async function getLockers(
     };
   }
 
-  const foundUserId = await getUserIdFromToken(token);
-  if (!foundUserId.success) {
-    return foundUserId;
-  }
-
-  const resp = await axios.get<ApiResponse<Locker[]>>(
-    `${baseUrl}/lockers/${foundUserId.payload}`,
-    {}
-  );
+  const resp = await axios.get<ApiResponse<Locker[]>>(`${baseUrl}/lockers/`);
 
   if (resp.status !== 200 && !resp.data?.success) {
     return {
@@ -77,7 +31,6 @@ export async function getLockers(
 }
 
 export async function getLockedLocker(
-  token: string | null,
   combination: string
 ): Promise<ApiResponse<number>> {
   let locker: Locker | undefined;
@@ -104,15 +57,9 @@ export async function getLockedLocker(
         };
   }
 
-  const userIdApiResponse = await getUserIdFromToken(token);
-  if (!userIdApiResponse.success) {
-    return userIdApiResponse;
-  }
-
   const resp = await axios.post<ApiResponse<Locker["id"]>>(
-    `${baseUrl}/lockers/locked`,
+    `${baseUrl}/lockers/locked/id`,
     {
-      userId: userIdApiResponse.payload,
       combination: combination,
     }
   );
@@ -128,11 +75,9 @@ export async function getLockedLocker(
 }
 
 export async function getLinks(
-  token: string | null,
-  lockerId?: number,
-  _userId?: number
+  lockerId?: number
 ): Promise<ApiResponse<Link[]>> {
-  /** Uses bearer token to gather all all links for specified non-locked locker id. */
+  /** Uses locker id to gather all all links for specified locked locker id. */
   if (mockData.use) {
     if (
       lockerId !== undefined &&
@@ -150,19 +95,10 @@ export async function getLinks(
       };
     }
   }
-  let userId = _userId;
-  if (!userId) {
-    const foundUserId = await getUserIdFromToken(token);
-    if (!foundUserId.success) {
-      return foundUserId;
-    }
-    userId = foundUserId.payload;
-  }
 
   const lockerLinkedToUser = await axios.post(
     `${baseUrl}/lockers/userOwnsLocker`,
     {
-      userId: userId,
       lockerId: lockerId,
     }
   );
@@ -194,7 +130,6 @@ export async function getLinks(
 }
 
 export async function getLockedLinks(
-  token: string | null,
   lockerId: number | undefined,
   state: LockerState
 ): Promise<ApiResponse<Link[]>> {
@@ -215,13 +150,7 @@ export async function getLockedLinks(
     }
   }
 
-  const userIdApiResponse = await getUserIdFromToken(token);
-  if (!userIdApiResponse.success) {
-    return userIdApiResponse;
-  }
-
   const lockedLockerResp = await axios.post(`${baseUrl}/lockers/locked/id`, {
-    userId: userIdApiResponse.payload,
     combination: state.combination,
   });
   if (!lockedLockerResp.data?.success) {
@@ -233,21 +162,15 @@ export async function getLockedLinks(
     };
   }
 
-  return await getLinks(token, lockerId);
+  return await getLinks(lockerId);
 }
 
 export async function addNewLink(
-  token: string | null,
   lockerId: number,
   link: Link
 ): Promise<ApiResponse<number>> {
   if (mockData.use) {
     return { success: true, payload: generateRandomNumber() };
-  }
-
-  const foundUserId = await getUserIdFromToken(token);
-  if (!foundUserId.success) {
-    return foundUserId;
   }
 
   const addLinkResp = await axios.post(`${baseUrl}/links/add`, {
@@ -268,7 +191,6 @@ export async function addNewLink(
 }
 
 export async function addNewLocker(
-  token: string | null,
   locker: Locker
 ): Promise<ApiResponse<number>> {
   if (mockData.use) {
@@ -282,13 +204,7 @@ export async function addNewLocker(
     return { success: true, payload: newLocker.id };
   }
 
-  const userIdApiResponse = await getUserIdFromToken(token);
-  if (!userIdApiResponse.success) {
-    return userIdApiResponse;
-  }
-
   const addLockerResp = await axios.post(`${baseUrl}/lockers/new`, {
-    userId: userIdApiResponse.payload,
     name: locker.name,
     locked: locker.locked,
     combination: locker.locked ? locker.combination : "",

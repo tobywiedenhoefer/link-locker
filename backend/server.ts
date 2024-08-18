@@ -8,20 +8,25 @@ import { userRoutes } from "./routes/user.ts";
 import { lockersRoutes } from "./routes/lockers.ts";
 import { tokenRoutes } from "./routes/token.ts";
 
-import validBearerToken from "./validBearerToken.ts";
+import verifyBearerToken from "./verifyBearerToken.ts";
 
 const app: Express = express();
 
 app.use(express.json());
 
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
   res.header("Access-Control-Allow-Origin", "localhost");
   res.header(
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept"
   );
   if (!publicRoutes.includes(req.path)) {
-    validBearerToken(req.headers.authorization);
+    const bearerTokenVerified = await verifyBearerToken(req.headers.authorization);
+    if (!bearerTokenVerified.success) {
+      res.json(bearerTokenVerified)
+      return;
+    }
+    req.body.userId = bearerTokenVerified.payload
   }
   next();
 });
