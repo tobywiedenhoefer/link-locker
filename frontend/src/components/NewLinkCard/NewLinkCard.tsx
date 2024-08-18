@@ -8,7 +8,7 @@ import "./NewLinkCard.css";
 import "../LinkCard/LinkCard.css";
 
 type NewLinkCardProps = {
-  lockerId: string;
+  lockerId: number;
   handleSubmit: (link: Link) => void;
 };
 

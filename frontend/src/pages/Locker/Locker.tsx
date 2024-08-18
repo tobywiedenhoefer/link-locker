@@ -73,7 +73,7 @@ export default function Locker() {
           })}
         {editStatus === "edit" ? (
           <NewLinkCard
-            lockerId={params?.locker!}
+            lockerId={params?.locker !== undefined ? +params.locker : NaN}
             handleSubmit={(link: Link) => {
               links.push(link);
               setEditStatus("view");

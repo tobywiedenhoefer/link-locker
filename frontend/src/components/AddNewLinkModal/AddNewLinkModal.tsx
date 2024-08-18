@@ -23,7 +23,7 @@ import "./AddNewLinkModal.css";
 import "../LinkCard/LinkCard.css";
 
 type AddNewLinkModalProps = {
-  lockerId: string;
+  lockerId: number;
   handleSubmit: (link: Link) => void;
 } & ModalProps;
 
