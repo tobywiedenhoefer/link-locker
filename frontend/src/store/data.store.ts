@@ -280,10 +280,28 @@ export async function createAndAuthenticateLogin(
       },
     };
   }
-  return {
-    success: false,
-    errorCode: ErrorCodes.CouldNotCreateUser,
-    errorMessage:
-      "There was a problem creating an account. Please either try another username or try again later.",
-  };
+
+  if (!username || !password) {
+    return {
+      success: false,
+      errorCode: ErrorCodes.IncorrectRequestFormat,
+      errorMessage: "Incorrect request format.",
+    };
+  }
+
+  const createUserRequest = await axios.post(`${baseUrl}/create-user`, {
+    username: username,
+    password: password,
+  });
+  if (!createUserRequest.data.success) {
+    return {
+      success: false,
+      errorCode:
+        createUserRequest.data.errorCode || ErrorCodes.CouldNotCreateUser,
+      errorMessage:
+        createUserRequest.data.errorMessage || "Could not create user.",
+    };
+  }
+
+  return await authenticateLogin(username, password);
 }
