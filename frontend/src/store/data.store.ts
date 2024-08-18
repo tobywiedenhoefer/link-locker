@@ -1,3 +1,5 @@
+import api from "../services/api.service";
+
 import mockData, { generateRandomNumber } from "../constants/mockData";
 import { ErrorCodes } from "../shared/errors";
 import Link from "../types/link.type";
@@ -5,9 +7,6 @@ import LockerState from "../types/lockerState.type";
 import ApiResponse from "../types/apiResponse.type";
 import Locker from "../types/locker.type";
 import AuthCreds from "../types/authCreds.type";
-import axios from "axios";
-
-const baseUrl = `${Bun.env.API_URL || ""}:${Bun.env.API_PORT || ""}/api`;
 
 export async function getLockers(): Promise<ApiResponse<Locker[]>> {
   /** Uses bearer token to gather all lockers for the associated token's user.*/
@@ -18,16 +17,15 @@ export async function getLockers(): Promise<ApiResponse<Locker[]>> {
     };
   }
 
-  const resp = await axios.get<ApiResponse<Locker[]>>(`${baseUrl}/lockers/`);
-
-  if (resp.status !== 200 && !resp.data?.success) {
+  try {
+    return await api.get("/lockers/").json<ApiResponse<Locker[]>>();
+  } catch (e) {
     return {
       success: false,
-      errorCode: resp.data?.errorCode || ErrorCodes.CouldNotFindLockers,
-      errorMessage: resp.data?.errorMessage || "Could not find lockers.",
+      errorCode: ErrorCodes.CouldNotFindLockers,
+      errorMessage: `Could not find lockers. Error raised: ${e}`,
     };
   }
-  return resp.data;
 }
 
 export async function getLockedLocker(
@@ -57,21 +55,21 @@ export async function getLockedLocker(
         };
   }
 
-  const resp = await axios.post<ApiResponse<Locker["id"]>>(
-    `${baseUrl}/lockers/locked/id`,
-    {
-      combination: combination,
-    }
-  );
-
-  if (!resp.data?.success) {
+  try {
+    const formData = new FormData();
+    formData.append("combination", combination);
+    return await api
+      .post("/lockers/locked/id", {
+        body: formData,
+      })
+      .json<ApiResponse<Locker["id"]>>();
+  } catch (e) {
     return {
       success: false,
-      errorCode: resp.data?.errorCode || ErrorCodes.CouldNotFindLockers,
-      errorMessage: resp.data?.errorMessage || "Could not find locker.",
+      errorCode: ErrorCodes.CouldNotFindLockers,
+      errorMessage: `Could not find locker. Error raised: ${e}`,
     };
   }
-  return resp.data;
 }
 
 export async function getLinks(
@@ -96,37 +94,21 @@ export async function getLinks(
     }
   }
 
-  const lockerLinkedToUser = await axios.post(
-    `${baseUrl}/lockers/userOwnsLocker`,
-    {
-      lockerId: lockerId,
+  try {
+    const userOwnsLockerResponse = await api
+      .post("/lockers/userOwnsLocker")
+      .json<ApiResponse<boolean>>();
+    if (!userOwnsLockerResponse.success) {
+      return userOwnsLockerResponse;
     }
-  );
-  if (lockerLinkedToUser.status !== 200 && !lockerLinkedToUser.data?.success) {
+    return await api.get(`/links/${lockerId}`).json<ApiResponse<Link[]>>();
+  } catch (e) {
     return {
       success: false,
-      errorCode:
-        lockerLinkedToUser.data?.errorCode || ErrorCodes.InvalidLockerId,
-      errorMessage:
-        lockerLinkedToUser.data?.errorMessage ||
-        "LockerId not linked to userId.",
+      errorCode: ErrorCodes.UnexpectedErrorRaisedDuringDBCall,
+      errorMessage: `An unexpected error was raised while making a DB call: ${e}`,
     };
   }
-
-  const linksResp = await axios.get(`${baseUrl}/links/${lockerId}`);
-  if (linksResp.status !== 200 && !linksResp.data?.success) {
-    return {
-      success: false,
-      errorCode:
-        linksResp.data?.errorCode ||
-        ErrorCodes.UnexpectedErrorRaisedDuringDBCall,
-      errorMessage:
-        linksResp.data?.errorMessage ||
-        "An unexpected error was raised while making a DB call.",
-    };
-  }
-
-  return linksResp.data;
 }
 
 export async function getLockedLinks(
@@ -150,44 +132,49 @@ export async function getLockedLinks(
     }
   }
 
-  const lockedLockerResp = await axios.post(`${baseUrl}/lockers/locked/id`, {
-    combination: state.combination,
-  });
-  if (!lockedLockerResp.data?.success) {
+  try {
+    const formData = new FormData();
+    formData.append("combination", state.combination);
+    const matchingLockerResp = await api
+      .post("/lockers/locked/id", { body: formData })
+      .json<ApiResponse<Locker[]>>();
+    if (!matchingLockerResp.success) {
+      return matchingLockerResp;
+    }
+    return await getLinks(lockerId);
+  } catch (e) {
     return {
       success: false,
-      errorCode: lockedLockerResp.data?.errorCode || ErrorCodes.CouldNotUnlock,
-      errorMessage:
-        lockedLockerResp.data?.errorMessage || "Could not find/unlock locker.",
+      errorCode: ErrorCodes.CouldNotUnlock,
+      errorMessage: `Could not find/unlock locker. Error raised: ${e}`,
     };
   }
-
-  return await getLinks(lockerId);
 }
 
 export async function addNewLink(
   lockerId: number,
   link: Link
-): Promise<ApiResponse<number>> {
+): Promise<ApiResponse<Link["id"]>> {
   if (mockData.use) {
     return { success: true, payload: generateRandomNumber() };
   }
 
-  const addLinkResp = await axios.post(`${baseUrl}/links/add`, {
-    lockerId: lockerId,
-    name: link.name,
-    url: link.url,
-    tags: link.tags,
-  });
-  if (!addLinkResp.data.success) {
+  try {
+    const formData = new FormData();
+    formData.set("lockerId", lockerId.toString());
+    formData.set("name", link.name);
+    formData.set("url", link.url);
+    formData.set("tags", JSON.stringify(link.tags));
+    return await api
+      .post("/links/add", { body: formData })
+      .json<ApiResponse<Link["id"]>>();
+  } catch (e) {
     return {
       success: false,
-      errorCode: addLinkResp.data?.errorCode || ErrorCodes.CouldNotAddNewLink,
-      errorMessage:
-        addLinkResp.data?.errorMessage || "Link could not be added.",
+      errorCode: ErrorCodes.CouldNotAddNewLink,
+      errorMessage: `Link could not be added. Error was raised: ${e}`,
     };
   }
-  return addLinkResp.data;
 }
 
 export async function addNewLocker(
@@ -204,22 +191,21 @@ export async function addNewLocker(
     return { success: true, payload: newLocker.id };
   }
 
-  const addLockerResp = await axios.post(`${baseUrl}/lockers/new`, {
-    name: locker.name,
-    locked: locker.locked,
-    combination: locker.locked ? locker.combination : "",
-  });
-  if (!addLockerResp.data?.success) {
+  try {
+    const formData = new FormData();
+    formData.set("name", locker.name);
+    formData.set("locked", String(locker.locked));
+    formData.set("combination", locker.locked ? locker.combination : "");
+    return await api
+      .post("/lockers/new", { body: formData })
+      .json<ApiResponse<Locker["id"]>>();
+  } catch (e) {
     return {
       success: false,
-      errorCode:
-        addLockerResp.data?.errorCode || ErrorCodes.CouldNotAddNewLocker,
-      errorMessage:
-        addLockerResp.data?.errorMessage ||
-        "API ressponse is either undefined or unsuccessful, could not add a new locker.",
+      errorCode: ErrorCodes.CouldNotAddNewLocker,
+      errorMessage: `API ressponse is either undefined or unsuccessful, could not add a new locker. Error raised: ${e}`,
     };
   }
-  return addLockerResp.data;
 }
 
 export async function authenticateLogin(
@@ -227,7 +213,6 @@ export async function authenticateLogin(
   password: string
 ): Promise<ApiResponse<AuthCreds>> {
   if (mockData.use) {
-    axios.defaults.headers.common["Authorization"] = "Bearer " + mockData.uid;
     return {
       success: true,
       payload: {
@@ -245,25 +230,20 @@ export async function authenticateLogin(
     };
   }
 
-  const createNewTokenResp = await axios.post(`${baseUrl}/user/login`, {
-    username: username,
-    password: password,
-  });
-  if (!createNewTokenResp.data.success) {
+  try {
+    const formData = new FormData();
+    formData.set("username", username);
+    formData.set("password", password);
+    return await api
+      .post("/user/login", { body: formData })
+      .json<ApiResponse<AuthCreds>>();
+  } catch (e) {
     return {
       success: false,
-      errorCode:
-        createNewTokenResp.data.errorCode || ErrorCodes.CouldNotLoginUser,
-      errorMessage:
-        createNewTokenResp.data.errorMessage || "Could not authenticate user.",
+      errorCode: ErrorCodes.CouldNotLoginUser,
+      errorMessage: `Could not authenticate user. Error raised ${e}`,
     };
   }
-  return {
-    success: true,
-    payload: {
-      token: createNewTokenResp.data.payload,
-    },
-  };
 }
 
 export async function createAndAuthenticateLogin(
@@ -271,7 +251,6 @@ export async function createAndAuthenticateLogin(
   password: string
 ): Promise<ApiResponse<AuthCreds>> {
   if (mockData.use) {
-    axios.defaults.headers.common["Authorization"] = "Bearer " + mockData.token;
     return {
       success: true,
       payload: {
@@ -289,19 +268,22 @@ export async function createAndAuthenticateLogin(
     };
   }
 
-  const createUserRequest = await axios.post(`${baseUrl}/create-user`, {
-    username: username,
-    password: password,
-  });
-  if (!createUserRequest.data.success) {
+  try {
+    const formData = new FormData();
+    formData.set("username", username);
+    formData.set("password", password);
+    const createdUser = await api
+      .post("/create-user", { body: formData })
+      .json<ApiResponse<any>>();
+    if (!createdUser.success) {
+      return createdUser;
+    }
+    return await authenticateLogin(username, password);
+  } catch (e) {
     return {
       success: false,
-      errorCode:
-        createUserRequest.data.errorCode || ErrorCodes.CouldNotCreateUser,
-      errorMessage:
-        createUserRequest.data.errorMessage || "Could not create user.",
+      errorCode: ErrorCodes.CouldNotCreateUser,
+      errorMessage: `Could not create user. Error raised: ${e}`,
     };
   }
-
-  return await authenticateLogin(username, password);
 }
