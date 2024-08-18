@@ -211,7 +211,7 @@ router.post("/new", async (req, res) => {
   try {
     reqUserId = +req.body.userId;
     reqName = req.body.name;
-    reqLocked = req.body.locked;
+    reqLocked = req.body.locked === "true";
     reqCombination = req.body.combination;
   } catch (_) {
     reqUserId = NaN;
@@ -221,6 +221,7 @@ router.post("/new", async (req, res) => {
   }
   if (
     typeof reqUserId !== "number" ||
+    Number.isNaN(reqUserId) ||
     typeof reqName !== "string" ||
     typeof reqLocked !== "boolean" ||
     typeof reqCombination !== "string"

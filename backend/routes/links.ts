@@ -79,16 +79,31 @@ router.post("/add", async (req, res) => {
    */
   let resp: ApiResponse<number>;
 
-  if (
-    typeof req.body.name !== "number" ||
-    typeof req.body.url !== "string" ||
-    !(req.body.tags instanceof Array) ||
-    typeof req.body.lockerId !== "number"
-  ) {
+  let name: string;
+  let url: string;
+  let tags: Array<string>;
+  let lockerId: number;
+  try {
+    name = req.body.name;
+    url = req.body.url;
+    tags = JSON.parse(req.body.tags);
+    lockerId = +req.body.lockerId;
+    if (
+      typeof name !== "string" ||
+      typeof url !== "string" ||
+      !(tags instanceof Array) ||
+      typeof lockerId !== "number" ||
+      Number.isNaN(lockerId)
+    ) {
+      throw Error(
+        "Variables in req body were not able to be converted to correct types or instances."
+      );
+    }
+  } catch (e) {
     resp = {
       success: false,
       errorCode: ErrorCodes.IncorrectRequest,
-      errorMessage: "Incorrect request format.",
+      errorMessage: `Incorrect request format. Error occurred while parsing request: ${e}`,
     };
     res.json(resp);
     return;
@@ -96,9 +111,9 @@ router.post("/add", async (req, res) => {
 
   try {
     const addLinkResp = await addLink({
-      url: req.body.url,
-      name: req.body.name,
-      locker_id: req.body.lockerId,
+      url: url,
+      name: name,
+      locker_id: lockerId,
     });
     if (addLinkResp.length === 0) {
       resp = {
@@ -107,7 +122,7 @@ router.post("/add", async (req, res) => {
         errorMessage: "New link could not be added.",
       };
     } else {
-      await addTagsByLinkId(addLinkResp[0].newLinkId, req.body.tags);
+      await addTagsByLinkId(addLinkResp[0].newLinkId, tags);
       resp = {
         success: true,
         payload: addLinkResp[0].newLinkId,
