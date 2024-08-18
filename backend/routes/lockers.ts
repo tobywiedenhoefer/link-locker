@@ -15,9 +15,9 @@ const router = Router();
 
 // get
 
-router.get("/:id", async (req, res) => {
+router.get("/", async (req, res) => {
   /**
-   * Passing the user id in the url, check if the user's session has expired.
+   * Using the userId set in the request body during bearer token validation, check if the user's session has expired.
    * Response: {
    *   success: true,
    *   payload: Locker[]
@@ -27,13 +27,13 @@ router.get("/:id", async (req, res) => {
    *   errorMessage: string
    * }
    */
-  const userId = +req.params.id;
+  const userId = req.body.userId;
   let resp: ApiResponse<Locker[]>;
-  if (Number.isNaN(userId)) {
+  if (!userId || typeof userId !== "number" || Number.isNaN(userId)) {
     resp = {
       success: false,
       errorCode: ErrorCodes.IncorrectRequest,
-      errorMessage: "Incorrect request format.",
+      errorMessage: `Incorrect request format for userId: ${userId}`,
     };
     res.json(resp);
     return;
