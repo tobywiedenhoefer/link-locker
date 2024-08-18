@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 
-import { useAuth } from "../../contexts/AuthContext";
 import { addNewLocker } from "../../store/data.store";
 
 import Modal, { ModalProps } from "../Modal/Modal";
@@ -23,7 +22,6 @@ type AddLockerModalProps = {
   handleSubmit: (locker: Locker) => void;
 } & ModalProps;
 export default function AddLockerModal(props: AddLockerModalProps) {
-  const { token } = useAuth();
   const [formFields, setFormFields] = useState<FormFields>(DEFAULT_FORM_FIELDS);
   const [validators, setValidators] = useState<Validators>(DEFAULT_VALIDATORS);
   const [workflow, setWorkflow] = useState<
@@ -40,7 +38,7 @@ export default function AddLockerModal(props: AddLockerModalProps) {
             locked: formFields.locked,
             combination: formFields.combination,
           };
-          const resp = await addNewLocker(token, newLocker);
+          const resp = await addNewLocker(newLocker);
           if (resp.success) {
             props.handleSubmit(newLocker);
             setWorkflow(null);

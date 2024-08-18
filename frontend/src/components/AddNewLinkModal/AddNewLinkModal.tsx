@@ -28,7 +28,6 @@ type AddNewLinkModalProps = {
 } & ModalProps;
 
 export default function AddNewLinkModal(props: AddNewLinkModalProps) {
-  const { token } = useAuth();
   const [formFields, setFormFields] = useState<FormFields>(DEFAULT_FORM_FIELDS);
   const [workflow, setWorkflow] = useState<SubmissionWorkflow>(
     SubmissionWorkflow.default
@@ -44,7 +43,7 @@ export default function AddNewLinkModal(props: AddNewLinkModalProps) {
             url: formFields.url,
             tags: formFields.tags,
           };
-          const resp = await addNewLink(token, -1, newLink);
+          const resp = await addNewLink(props.lockerId, newLink);
           if (resp.success) {
             props.handleSubmit({ ...newLink, id: resp.payload });
             setWorkflow(SubmissionWorkflow.default);

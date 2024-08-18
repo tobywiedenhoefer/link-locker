@@ -6,17 +6,15 @@ import AddLockerButton from "../../components/AddLockerButton/AddLockerButton";
 
 import Locker from "../../types/locker.type";
 
-import { useAuth } from "../../contexts/AuthContext";
 import { getLockers } from "../../store/data.store";
 
 import "./Lockers.css";
 
 export default function Lockers() {
-  const { token } = useAuth();
   const [lockers, setLockers] = useState<Array<Locker>>([]);
   useEffect(() => {
     (async () => {
-      const resp = await getLockers(token);
+      const resp = await getLockers();
       if (resp.success) {
         setLockers(resp.payload);
       } else {

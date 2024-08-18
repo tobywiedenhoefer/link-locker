@@ -10,7 +10,6 @@ import {
 } from "../../types/formTypes.type";
 import SubmissionWorkflow from "../../constants/submissionWorkflows";
 
-import { useAuth } from "../../contexts/AuthContext";
 import { getLockedLocker } from "../../store/data.store";
 import { getExpiryDate } from "../../store/date.store";
 
@@ -27,7 +26,6 @@ export default function SearchLockedLockersModal(
   props: SearchLockedLockersModalProps
 ) {
   const navigate = useNavigate();
-  const { token } = useAuth();
   const [formFields, setFormFields] = useState<FormFields>(DEFAULT_FORM_FIELDS);
   const [validators, setValidators] = useState<Validators>(DEFAULT_VALIDATORS);
   const [workflow, setWorkflow] = useState<SubmissionWorkflow>(
@@ -39,7 +37,7 @@ export default function SearchLockedLockersModal(
     switch (workflow) {
       case SubmissionWorkflow.submitting: {
         (async () => {
-          const res = await getLockedLocker(token, formFields.combination);
+          const res = await getLockedLocker(formFields.combination);
           if (res.success) {
             setNextLocker(res.payload);
             setWorkflow(SubmissionWorkflow.success);
