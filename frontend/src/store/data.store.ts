@@ -271,11 +271,11 @@ export async function createAndAuthenticateLogin(
   password: string
 ): Promise<ApiResponse<AuthCreds>> {
   if (mockData.use) {
-    axios.defaults.headers.common["Authorization"] = "Bearer " + mockData.uid;
+    axios.defaults.headers.common["Authorization"] = "Bearer " + mockData.token;
     return {
       success: true,
       payload: {
-        token: mockData.uid,
+        token: mockData.token,
         uid: mockData.uid,
       },
     };
