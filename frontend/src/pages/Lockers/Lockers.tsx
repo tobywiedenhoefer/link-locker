@@ -12,6 +12,7 @@ import { ErrorCodes } from "../../shared/errors";
 import SubmissionWorkflow from "../../constants/submissionWorkflows";
 
 import "./Lockers.css";
+import "../../shared/loading.css";
 
 export default function Lockers() {
   const [lockers, setLockers] = useState<Array<Locker>>([]);
@@ -44,9 +45,13 @@ export default function Lockers() {
   };
   return (
     <div className="locker-cards">
-      {lockers.map((locker) => {
-        return <LockerCard key={locker.id} locker={locker} />;
-      })}
+      {workflow === SubmissionWorkflow.success ? (
+        lockers.map((locker) => {
+          return <LockerCard key={locker.id} locker={locker} />;
+        })
+      ) : (
+        <div className="loading-spinner" />
+      )}
       <div className="locker-buttons-row">
         <AddLockerButton handleSubmit={handleNewLockerSubmission} />
         <SearchLockedLockersButton />
