@@ -6,6 +6,8 @@ import Link from "../../types/link.type";
 import ApiResponse from "../../types/apiResponse.type";
 import LockerState from "../../types/lockerState.type";
 import { filterLinkSubstring } from "../../shared/filterSearch";
+import { ErrorCodes } from "../../shared/errors";
+import SubmissionWorkflow from "../../constants/submissionWorkflows";
 
 import LinkCard from "../../components/LinkCard/LinkCard";
 import SearchBar from "../../components/SearchBar/SearchBar";
@@ -24,6 +26,9 @@ export default function Locker() {
   const [showModal, setShowModal] = useState(false);
   const [selectedLink, setSelectedLink] = useState<Link | null>();
   const [editStatus, setEditStatus] = useState<"edit" | "view">("view");
+  const [workflow, setWorkflow] = useState<SubmissionWorkflow>(
+    SubmissionWorkflow.default
+  );
   const handleModalClose = () => {
     setShowModal(false);
     setSelectedLink(null);
@@ -31,20 +36,29 @@ export default function Locker() {
   useEffect(() => {
     (async () => {
       const state: LockerState | null | undefined = location.state;
-      const lockerId = params?.locker !== undefined ? +params?.locker : NaN;
-      let resp: ApiResponse<Link[]>;
-      if (typeof state === "undefined" || state === null) {
-        resp = await getLinks(lockerId);
-      } else {
-        resp = await getLockedLinks(lockerId, state);
-      }
-      if (resp.success) {
-        setLinks(resp.payload);
-      } else {
-        navigate("/", { replace: true });
+      switch (workflow) {
+        case SubmissionWorkflow.default: {
+          const lockerId = params?.locker ? +params.locker : NaN;
+          let resp: ApiResponse<Link[]>;
+          if (!state) {
+            resp = await getLinks(lockerId);
+          } else {
+            resp = await getLockedLinks(lockerId, state);
+          }
+          if (resp.success) {
+            setLinks(resp.payload);
+            setWorkflow(SubmissionWorkflow.success);
+          } else if (resp.errorCode === ErrorCodes.CacheExpiredOrNotSet) {
+            navigate("/logout", { replace: true });
+          } else {
+            console.log("error: ", resp);
+            setWorkflow(SubmissionWorkflow.failure);
+          }
+          break;
+        }
       }
     })();
-  }, [links]);
+  }, [links, workflow]);
   return (
     <>
       <div className="search-bar-row">
