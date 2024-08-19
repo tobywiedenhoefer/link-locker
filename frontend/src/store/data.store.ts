@@ -18,7 +18,7 @@ export async function getLockers(): Promise<ApiResponse<Locker[]>> {
   }
 
   try {
-    return await api.get("/lockers/").json<ApiResponse<Locker[]>>();
+    return await api.get("lockers/").json<ApiResponse<Locker[]>>();
   } catch (e) {
     return {
       success: false,
@@ -56,11 +56,9 @@ export async function getLockedLocker(
   }
 
   try {
-    const formData = new FormData();
-    formData.append("combination", combination);
     return await api
-      .post("/lockers/locked/id", {
-        body: formData,
+      .post("lockers/locked/id", {
+        json: { combination: combination },
       })
       .json<ApiResponse<Locker["id"]>>();
   } catch (e) {
@@ -96,12 +94,12 @@ export async function getLinks(
 
   try {
     const userOwnsLockerResponse = await api
-      .post("/lockers/userOwnsLocker")
+      .post("lockers/userOwnsLocker")
       .json<ApiResponse<boolean>>();
     if (!userOwnsLockerResponse.success) {
       return userOwnsLockerResponse;
     }
-    return await api.get(`/links/${lockerId}`).json<ApiResponse<Link[]>>();
+    return await api.get(`links/${lockerId}`).json<ApiResponse<Link[]>>();
   } catch (e) {
     return {
       success: false,
@@ -133,10 +131,8 @@ export async function getLockedLinks(
   }
 
   try {
-    const formData = new FormData();
-    formData.append("combination", state.combination);
     const matchingLockerResp = await api
-      .post("/lockers/locked/id", { body: formData })
+      .post("lockers/locked/id", { json: { combination: state.combination } })
       .json<ApiResponse<Locker[]>>();
     if (!matchingLockerResp.success) {
       return matchingLockerResp;
@@ -160,13 +156,14 @@ export async function addNewLink(
   }
 
   try {
-    const formData = new FormData();
-    formData.set("lockerId", lockerId.toString());
-    formData.set("name", link.name);
-    formData.set("url", link.url);
-    formData.set("tags", JSON.stringify(link.tags));
     return await api
-      .post("/links/add", { body: formData })
+      .post("links/add", {
+        json: {
+          name: link.name,
+          url: link.url,
+          tags: JSON.stringify(link.tags),
+        },
+      })
       .json<ApiResponse<Link["id"]>>();
   } catch (e) {
     return {
@@ -192,12 +189,14 @@ export async function addNewLocker(
   }
 
   try {
-    const formData = new FormData();
-    formData.set("name", locker.name);
-    formData.set("locked", String(locker.locked));
-    formData.set("combination", locker.locked ? locker.combination : "");
     return await api
-      .post("/lockers/new", { body: formData })
+      .post("lockers/new", {
+        json: {
+          name: locker.name,
+          locked: String(locker.locked),
+          combination: locker.locked ? locker.combination : "",
+        },
+      })
       .json<ApiResponse<Locker["id"]>>();
   } catch (e) {
     return {
@@ -231,12 +230,9 @@ export async function authenticateLogin(
   }
 
   try {
-    const formData = new FormData();
-    formData.set("username", username);
-    formData.set("password", password);
     return await api
-      .post("/user/login", { body: formData })
-      .json<ApiResponse<AuthCreds>>();
+      .post("user/login", { json: { username: username, password: password } })
+      .json<ApiResponse<string>>();
   } catch (e) {
     return {
       success: false,
@@ -269,11 +265,8 @@ export async function createAndAuthenticateLogin(
   }
 
   try {
-    const formData = new FormData();
-    formData.set("username", username);
-    formData.set("password", password);
     const createdUser = await api
-      .post("/create-user", { body: formData })
+      .post("create-user", { json: { username: username, password: password } })
       .json<ApiResponse<any>>();
     if (!createdUser.success) {
       return createdUser;
