@@ -8,7 +8,6 @@ import {
   LoginFormFields as FormFields,
   LoginValidators as Validators,
 } from "../../types/formTypes.type";
-import AuthCreds from "../../types/authCreds.type";
 
 import {
   DEFAULT_LOGIN_FORM_FIELDS as DEFAULT_FORM_FIELDS,
@@ -31,7 +30,7 @@ export default function Login(_: LoginProps) {
   const [workflow, setWorkflow] = useState<SubmissionWorkflow>(
     SubmissionWorkflow.default
   );
-  const [auth, setAuth] = useState<AuthCreds | undefined>();
+  const [auth, setAuth] = useState<string>("");
   useEffect(() => {
     (async () => {
       switch (workflow) {
@@ -40,7 +39,7 @@ export default function Login(_: LoginProps) {
             formFields.username,
             formFields.password
           );
-          if (resp.success && resp.payload.token) {
+          if (resp.success && resp.payload) {
             setAuth(resp.payload);
             setWorkflow(SubmissionWorkflow.success);
           } else {
@@ -49,8 +48,8 @@ export default function Login(_: LoginProps) {
           break;
         }
         case SubmissionWorkflow.success: {
+          updateToken(auth);
           setWorkflow(SubmissionWorkflow.default);
-          updateToken(auth!.token);
           break;
         }
         case SubmissionWorkflow.failure: {
@@ -58,7 +57,7 @@ export default function Login(_: LoginProps) {
         }
       }
     })();
-  }, [workflow]);
+  }, [workflow, auth]);
 
   const handleSetFormFields = (k: keyof FormFields, v: string) => {
     setFormFields({

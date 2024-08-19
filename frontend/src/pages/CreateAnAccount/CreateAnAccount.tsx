@@ -18,7 +18,6 @@ import "./CreateAnAccount.css";
 import "../../shared/form.css";
 import SubmitButton from "../../components/SubmitButton/SubmitButton";
 import { createAndAuthenticateLogin } from "../../store/data.store";
-import AuthCreds from "../../types/authCreds.type";
 import { useAuth } from "../../contexts/AuthContext";
 
 type CreateAnAccountProps = {};
@@ -27,7 +26,7 @@ export default function CreateAnAccount(_: CreateAnAccountProps) {
   const { updateToken } = useAuth();
   const [formFields, setFormFields] = useState<FormFields>(DEFAULT_FORM_FIELDS);
   const [validators, setValidators] = useState<Validators>(DEFAULT_VALIDATORS);
-  const [auth, setAuth] = useState<AuthCreds | undefined>();
+  const [auth, setAuth] = useState<string>("");
   const [workflow, setWorkflow] = useState<SubmissionWorkflow>(
     SubmissionWorkflow.default
   );
@@ -49,7 +48,7 @@ export default function CreateAnAccount(_: CreateAnAccountProps) {
         }
         case SubmissionWorkflow.success: {
           setWorkflow(SubmissionWorkflow.default);
-          updateToken(auth!.token);
+          updateToken(auth);
           break;
         }
         case SubmissionWorkflow.failure: {

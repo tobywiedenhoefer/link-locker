@@ -6,7 +6,6 @@ import Link from "../types/link.type";
 import LockerState from "../types/lockerState.type";
 import ApiResponse from "../types/apiResponse.type";
 import Locker from "../types/locker.type";
-import AuthCreds from "../types/authCreds.type";
 
 export async function getLockers(): Promise<ApiResponse<Locker[]>> {
   /** Uses bearer token to gather all lockers for the associated token's user.*/
@@ -210,14 +209,11 @@ export async function addNewLocker(
 export async function authenticateLogin(
   username: string,
   password: string
-): Promise<ApiResponse<AuthCreds>> {
+): Promise<ApiResponse<string>> {
   if (mockData.use) {
     return {
       success: true,
-      payload: {
-        token: mockData.token,
-        uid: mockData.uid,
-      },
+      payload: mockData.token,
     };
   }
 
@@ -245,14 +241,11 @@ export async function authenticateLogin(
 export async function createAndAuthenticateLogin(
   username: string,
   password: string
-): Promise<ApiResponse<AuthCreds>> {
+): Promise<ApiResponse<string>> {
   if (mockData.use) {
     return {
       success: true,
-      payload: {
-        token: mockData.token,
-        uid: mockData.uid,
-      },
+      payload: mockData.token,
     };
   }
 

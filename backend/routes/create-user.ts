@@ -2,7 +2,6 @@ import { Router } from "express";
 import * as bcrypt from "bcryptjs";
 
 import { ErrorCodes } from "../constants/errors";
-import Error from "../types/error.type";
 import { createUser } from "../src/db/queries/createUser";
 import ApiResponse from "../types/ApiResponse.type";
 
