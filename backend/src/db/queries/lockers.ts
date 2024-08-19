@@ -9,7 +9,7 @@ export async function getLockersByUserId(
   return await db
     .select()
     .from(lockersTable)
-    .where(eq(lockersTable.id, userId))
+    .where(eq(lockersTable.user_id, userId))
     .limit(10);
 }
 
