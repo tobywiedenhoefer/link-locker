@@ -101,51 +101,51 @@ router.post("/login", async (req, res) => {
     return;
   }
 
-  bcrypt.hash(req.body.password, 15, async (error, result) => {
-    if (error) {
-      resp = {
-        success: false,
-        errorCode: ErrorCodes.UnexpectedErrorRaisedWhileHashingPassword,
-        errorMessage:
-          "An unexpected error was raised while hashing the requested password.",
-      };
-      res.json(resp);
-      return;
-    }
-
-    const userIdApiResponse = await getUserIdByUsernameAndPasswordHash(
-      req.body.username,
-      result
-    );
-    if (userIdApiResponse.length !== 0) {
-      resp = {
-        success: false,
-        errorCode: ErrorCodes.DBQueryReturnedNonUniqueOrNoRows,
-        errorMessage: `User id and password hash db query row count was not a length of one: ${userIdApiResponse.length}`,
-      };
-      res.json(resp);
-      return;
-    }
-    const [{ userId }] = userIdApiResponse;
-
-    const createTokenApiResponse = await createNewTokenByUserId(userId);
-    if (createTokenApiResponse.length !== 1) {
-      resp = {
-        success: false,
-        errorCode: ErrorCodes.DBQueryReturnedNonUniqueOrNoRows,
-        errorMessage: `Create a new token request returned with either none or multiple rows: ${createTokenApiResponse.length}`,
-      };
-      res.json(resp);
-      return;
-    }
-
-    const [{ token }] = createTokenApiResponse;
+  const userByUsername = await getUserByUsername(req.body.username);
+  if (userByUsername.length === 0) {
     resp = {
-      success: true,
-      payload: token,
+      success: false,
+      errorCode: ErrorCodes.CouldNotFindUsernameInDatabase,
+      errorMessage: `Could not find username in database: ${req.body.username}`,
     };
     res.json(resp);
-  });
+    return;
+  }
+  bcrypt.compare(
+    req.body.password,
+    userByUsername[0].password_hash,
+    async (error, success) => {
+      if (error) {
+        resp = {
+          success: false,
+          errorCode: ErrorCodes.UnexpectedErrorRaisedWhileHashingPassword,
+          errorMessage:
+            "An unexpected error was raised while comparing password hashes.",
+        };
+        res.json(resp);
+        return;
+      } else if (!success) {
+        resp = {
+          success: false,
+          errorCode: ErrorCodes.PasswordDoesNotMatchHash,
+          errorMessage: "Password hashes do not match.",
+        };
+        res.json(resp);
+        return;
+      }
+
+      const createTokenApiResponse = await createNewTokenByUserId(
+        userByUsername[0].id
+      );
+      const [{ token }] = createTokenApiResponse;
+      resp = {
+        success: true,
+        payload: token,
+      };
+      res.json(resp);
+      return;
+    }
+  );
 });
 
 export { router as userRoutes };
