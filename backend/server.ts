@@ -15,18 +15,17 @@ const app: Express = express();
 app.use(express.json());
 
 app.use(async (req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "localhost");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "*");
   if (!publicRoutes.includes(req.path)) {
-    const bearerTokenVerified = await verifyBearerToken(req.headers.authorization);
+    const bearerTokenVerified = await verifyBearerToken(
+      req.headers.authorization
+    );
     if (!bearerTokenVerified.success) {
-      res.json(bearerTokenVerified)
+      res.json(bearerTokenVerified);
       return;
     }
-    req.body.userId = bearerTokenVerified.payload
+    req.body.userId = bearerTokenVerified.payload;
   }
   next();
 });
