@@ -13,6 +13,7 @@ type FormInputRowProps<T, U> = {
   setFormFields: (k: keyof T, v: string) => void;
   required?: boolean;
   onKeyUp?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  isPassword?: boolean;
 };
 export default function FormInputRow<T, U>(props: FormInputRowProps<T, U>) {
   const handleInputOnChange = (
@@ -56,6 +57,7 @@ export default function FormInputRow<T, U>(props: FormInputRowProps<T, U>) {
           onBlur={(e) => handleInputOnBlur(props.keyName, e.target.value)}
           style={!!props.required ? getStyle("border") : {}}
           onKeyUp={!!props.onKeyUp ? props.onKeyUp : undefined}
+          type={props.isPassword ? "password" : "text"}
         />
         {!!props.required ? (
           <label

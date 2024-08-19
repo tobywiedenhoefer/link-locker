@@ -91,6 +91,7 @@ export default function CreateAnAccount(_: CreateAnAccountProps) {
             formFields={formFields}
             setValidators={handleSetValidators}
             setFormFields={handleSetFormFields}
+            isPassword
             required
           />
           <FormInputRow
@@ -100,6 +101,7 @@ export default function CreateAnAccount(_: CreateAnAccountProps) {
             formFields={formFields}
             setValidators={handleSetValidators}
             setFormFields={handleSetFormFields}
+            isPassword
             required
           />
         </div>

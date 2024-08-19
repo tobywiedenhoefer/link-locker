@@ -92,6 +92,7 @@ export default function Login(_: LoginProps) {
             formFields={formFields}
             setValidators={handleSetValidators}
             setFormFields={handleSetFormFields}
+            isPassword
           />
         </div>
         <SubmitButton
