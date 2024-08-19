@@ -14,7 +14,7 @@ export function generateRandomNumber() {
   return Math.floor(100000 + Math.random() * 900000);
 }
 
-const useMockData = true;
+const useMockData = false;
 const useMockUser = false;
 const mockUserUUID = generateRandomNumber();
 const mockUserToken = generateUUID();
