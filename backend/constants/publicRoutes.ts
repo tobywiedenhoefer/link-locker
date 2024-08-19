@@ -1,2 +1,2 @@
-const publicRoutes = ["/api/create-user", "/api/login-user"];
+const publicRoutes = ["/api/create-user", "/api/user/login"];
 export default publicRoutes;
