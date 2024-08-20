@@ -49,7 +49,9 @@ export async function getLockerCountByUserIdAndLockerId(
   return await db
     .select({ count: count() })
     .from(lockersTable)
-    .where(and(eq(lockersTable.id, userId), eq(lockersTable.id, lockerId)));
+    .where(
+      and(eq(lockersTable.user_id, userId), eq(lockersTable.id, lockerId))
+    );
 }
 
 export async function createLocker(locker: Omit<InsertLocker, "id">) {

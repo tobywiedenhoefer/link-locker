@@ -93,7 +93,7 @@ export async function getLinks(
 
   try {
     const userOwnsLockerResponse = await api
-      .post("lockers/userOwnsLocker")
+      .post("lockers/userOwnsLocker", { json: { lockerId: lockerId } })
       .json<ApiResponse<boolean>>();
     if (!userOwnsLockerResponse.success) {
       return userOwnsLockerResponse;

@@ -170,9 +170,14 @@ router.post("/userOwnsLocker", async (req, res) => {
       reqUserId,
       reqLockerId
     );
+    if (!count) {
+      throw Error(
+        `Could not find lockerId ${reqLockerId} associated with userId ${reqUserId}`
+      );
+    }
     resp = {
       success: true,
-      payload: !!count,
+      payload: true,
     };
   } catch (e) {
     resp = {
