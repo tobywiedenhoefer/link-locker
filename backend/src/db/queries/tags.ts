@@ -17,7 +17,7 @@ export async function addTagsByLinkId(
   linkId: InsertTag["link_id"],
   tags: string[]
 ) {
-  if (Number.isNaN(linkId) || typeof linkId === "number") {
+  if (Number.isNaN(linkId) || typeof linkId !== "number") {
     throw Error("linkId must be a number.");
   }
   return await db.insert(tagsTable).values(
