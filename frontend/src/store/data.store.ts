@@ -160,7 +160,8 @@ export async function addNewLink(
         json: {
           name: link.name,
           url: link.url,
-          tags: JSON.stringify(link.tags),
+          tags: link.tags,
+          lockerId: lockerId,
         },
       })
       .json<ApiResponse<Link["id"]>>();
