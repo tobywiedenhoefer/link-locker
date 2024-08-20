@@ -16,6 +16,7 @@ import LockerEditButton from "../../components/LockerEditButton/LockerEditButton
 import NewLinkCard from "../../components/NewLinkCard/NewLinkCard";
 
 import "./Locker.css";
+import "../../shared/loading.css";
 
 export default function Locker() {
   const params = useParams();
@@ -71,20 +72,26 @@ export default function Locker() {
         />
       </div>
       <div className="link-cards-container">
-        {links
-          .filter((link) => filterLinkSubstring(link, searchTerm))
-          .map((link) => {
-            return (
-              <LinkCard
-                key={link.id}
-                link={link}
-                onClick={() => {
-                  setSelectedLink(link);
-                  setShowModal(true);
-                }}
-              />
-            );
-          })}
+        {workflow !== SubmissionWorkflow.default ? (
+          links
+            .filter((link) => filterLinkSubstring(link, searchTerm))
+            .map((link) => {
+              return (
+                <LinkCard
+                  key={link.id}
+                  link={link}
+                  onClick={() => {
+                    setSelectedLink(link);
+                    setShowModal(true);
+                  }}
+                />
+              );
+            })
+        ) : (
+          <div className="spinner-container">
+            <div className="loading-spinner" />
+          </div>
+        )}
         {editStatus === "edit" ? (
           <NewLinkCard
             lockerId={params?.locker !== undefined ? +params.locker : NaN}
