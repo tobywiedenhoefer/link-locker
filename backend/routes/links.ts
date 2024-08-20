@@ -35,13 +35,13 @@ router.get("/:id", async (req, res) => {
   }
   try {
     const linkRows = await getLinksByLockerId(lockerId);
-    const links: Link[] = [];
-    linkRows.forEach(async (row) => {
-      const tagsResp = (await getTagsByLinkId(row.id)).map((link) => link.name);
-      links.push({
-        ...row,
-        tags: tagsResp,
-      });
+    const links: Link[] = linkRows.map((row) => {
+      return {
+        id: row.id,
+        name: row.name,
+        url: row.url,
+        tags: row.tags,
+      };
     });
     resp = {
       success: true,

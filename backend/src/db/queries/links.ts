@@ -1,15 +1,22 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 
 import { db } from "../db";
-import { InsertLink, SelectLink, linksTable } from "../schema";
+import { InsertLink, SelectLink, linksTable, tagsTable } from "../schema";
 
-export async function getLinksByLockerId(
-  lockerId: SelectLink["locker_id"]
-): Promise<SelectLink[]> {
+export async function getLinksByLockerId(lockerId: SelectLink["locker_id"]) {
   return await db
-    .select()
+    .select({
+      id: linksTable.id,
+      name: linksTable.name,
+      url: linksTable.url,
+      tags: sql<
+        string[]
+      >`coalesce(array_agg(${tagsTable.name}) filter (where ${tagsTable.name} is not null), '{}')`,
+    })
     .from(linksTable)
     .where(eq(linksTable.locker_id, lockerId || -1))
+    .groupBy(linksTable.id)
+    .leftJoin(tagsTable, eq(linksTable.id, tagsTable.link_id))
     .limit(50);
 }
 
