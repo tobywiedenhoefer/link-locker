@@ -9,19 +9,19 @@ export default async function verifyBearerToken(
   if (!auth || !auth.includes(" ")) {
     return {
       success: false,
-      errorCode: ErrorCodes.BearerTokenNotPresent,
+      errorCode: ErrorCodes.CacheExpiredOrNotSet,
       errorMessage: "Unauthorized.",
     };
   }
   try {
     const token = auth.split(" ")[1];
-    const unexpiredTokensQuery = await getUnexpiredTokens(token)
+    const unexpiredTokensQuery = await getUnexpiredTokens(token);
     if (unexpiredTokensQuery.length === 0) {
       return {
         success: false,
         errorCode: ErrorCodes.CacheExpiredOrNotSet,
-        errorMessage: `Could not find a a bearer token that matches ${token}`
-      }
+        errorMessage: `Could not find a a bearer token that matches ${token}`,
+      };
     }
     return {
       success: true,
