@@ -45,6 +45,9 @@ export const linksTable = pgTable("links", {
   locker_id: integer("locker_id").references(() => lockersTable.id, {
     onDelete: "cascade",
   }),
+  user_id: integer("user_id").references(() => lockersTable.id, {
+    onDelete: "cascade",
+  }),
 });
 
 export const tagsTable = pgTable("tags", {

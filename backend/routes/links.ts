@@ -83,11 +83,13 @@ router.post("/add", async (req, res) => {
   let url: string;
   let tags: Array<string>;
   let lockerId: number;
+  let userId: number;
   try {
     name = req.body.name;
     url = req.body.url;
-    tags = JSON.parse(req.body.tags);
-    lockerId = +req.body.lockerId;
+    tags = req.body.tags;
+    lockerId = req.body.lockerId;
+    userId = req.body.userId;
     if (
       typeof name !== "string" ||
       typeof url !== "string" ||
@@ -114,6 +116,7 @@ router.post("/add", async (req, res) => {
       url: url,
       name: name,
       locker_id: lockerId,
+      user_id: userId,
     });
     if (addLinkResp.length === 0) {
       resp = {

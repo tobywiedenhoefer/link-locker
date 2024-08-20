@@ -24,6 +24,7 @@ export async function addLink(locker: {
   name: InsertLink["name"];
   url: InsertLink["url"];
   locker_id: InsertLink["locker_id"];
+  user_id: InsertLink["user_id"];
 }) {
   return await db
     .insert(linksTable)
