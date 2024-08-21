@@ -9,7 +9,9 @@ export async function getLockersByUserId(
   return await db
     .select()
     .from(lockersTable)
-    .where(eq(lockersTable.user_id, userId))
+    .where(
+      and(eq(lockersTable.user_id, userId), eq(lockersTable.locked, false))
+    )
     .limit(10);
 }
 
@@ -44,13 +46,18 @@ export async function getLockedLockerByUserIdAndCombination(
 
 export async function getLockerCountByUserIdAndLockerId(
   userId: SelectLocker["user_id"],
-  lockerId: SelectLocker["id"]
+  lockerId: SelectLocker["id"],
+  locked?: boolean
 ): Promise<{ count: number }[]> {
   return await db
     .select({ count: count() })
     .from(lockersTable)
     .where(
-      and(eq(lockersTable.user_id, userId), eq(lockersTable.id, lockerId))
+      and(
+        eq(lockersTable.user_id, userId),
+        eq(lockersTable.id, lockerId),
+        eq(lockersTable.locked, !!locked)
+      )
     );
 }
 
