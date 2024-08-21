@@ -70,7 +70,8 @@ export async function getLockedLocker(
 }
 
 export async function getLinks(
-  lockerId?: number
+  lockerId?: number,
+  getLockedLinks?: boolean
 ): Promise<ApiResponse<Link[]>> {
   /** Uses locker id to gather all all links for specified locked locker id. */
   if (mockData.use) {
@@ -93,7 +94,9 @@ export async function getLinks(
 
   try {
     const userOwnsLockerResponse = await api
-      .post("lockers/userOwnsLocker", { json: { lockerId: lockerId } })
+      .post("lockers/userOwnsLocker", {
+        json: { lockerId: lockerId, locked: !!getLockedLinks },
+      })
       .json<ApiResponse<boolean>>();
     if (!userOwnsLockerResponse.success) {
       return userOwnsLockerResponse;
@@ -136,7 +139,7 @@ export async function getLockedLinks(
     if (!matchingLockerResp.success) {
       return matchingLockerResp;
     }
-    return await getLinks(lockerId);
+    return await getLinks(lockerId, true);
   } catch (e) {
     return {
       success: false,

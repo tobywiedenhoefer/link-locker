@@ -134,7 +134,8 @@ router.post("/userOwnsLocker", async (req, res) => {
    * Pass the user id and combination into the request body, returns a boolean if userId owns the locker.
    * Request body: {
    *   userId: number,
-   *   lockerId: number
+   *   lockerId: number,
+   *   locked: boolean
    * }
    * Response: {
    *   success: true,
@@ -148,14 +149,20 @@ router.post("/userOwnsLocker", async (req, res) => {
   let resp: ApiResponse<boolean>;
   let reqUserId: number;
   let reqLockerId: number;
+  let reqLocked: boolean | undefined;
   try {
     reqUserId = +req.body.userId;
     reqLockerId = +req.body.lockerId;
+    reqLocked = req.body.locked;
   } catch (_) {
     reqUserId = NaN;
     reqLockerId = NaN;
   }
-  if (Number.isNaN(reqUserId) || Number.isNaN(reqLockerId)) {
+  if (
+    Number.isNaN(reqUserId) ||
+    Number.isNaN(reqLockerId) ||
+    typeof reqLocked !== "boolean"
+  ) {
     resp = {
       success: false,
       errorCode: ErrorCodes.IncorrectRequest,
@@ -168,12 +175,17 @@ router.post("/userOwnsLocker", async (req, res) => {
   try {
     const [{ count }] = await getLockerCountByUserIdAndLockerId(
       reqUserId,
-      reqLockerId
+      reqLockerId,
+      reqLocked
     );
     if (!count) {
-      throw Error(
-        `Could not find lockerId ${reqLockerId} associated with userId ${reqUserId}`
-      );
+      resp = {
+        success: false,
+        errorCode: ErrorCodes.CouldNotFindLockers,
+        errorMessage: `Could not find lockerId ${reqLockerId} associated with userId ${reqUserId}`,
+      };
+      res.json(resp);
+      return;
     }
     resp = {
       success: true,
