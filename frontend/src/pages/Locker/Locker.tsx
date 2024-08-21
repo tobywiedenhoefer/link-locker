@@ -51,6 +51,8 @@ export default function Locker() {
             setWorkflow(SubmissionWorkflow.success);
           } else if (resp.errorCode === ErrorCodes.CacheExpiredOrNotSet) {
             navigate("/logout", { replace: true });
+          } else if (resp.errorCode === ErrorCodes.CouldNotFindLockers) {
+            navigate("/", { replace: true });
           } else {
             console.log("error: ", resp);
             setWorkflow(SubmissionWorkflow.failure);
