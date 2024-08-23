@@ -6,7 +6,6 @@ import FormInputRow from "../FormInputRow/FormInputRow";
 import LinkTag from "../LinkTag/LinkTag";
 
 import { addNewLink } from "../../store/data.store";
-import { useAuth } from "../../contexts/AuthContext";
 
 import Link from "../../types/link.type";
 import {
