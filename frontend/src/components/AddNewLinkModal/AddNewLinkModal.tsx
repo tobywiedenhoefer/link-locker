@@ -64,9 +64,17 @@ export default function AddNewLinkModal(props: AddNewLinkModalProps) {
     setFormFields({ ...formFields, [k]: v });
   };
   const handleSetValidators = (k: keyof Validators, v: string) => {
+    let valid = v.length > 0;
+    if (valid && k === "url") {
+      try {
+        new URL(v);
+      } catch {
+        valid = false;
+      }
+    }
     setValidators({
       ...validators,
-      [k]: { touched: true, valid: v.length > 0 },
+      [k]: { touched: true, valid: valid },
     });
   };
   const handleKeyUp = (e: React.KeyboardEvent) => {
