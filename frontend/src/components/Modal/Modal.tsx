@@ -14,7 +14,14 @@ export type ModalProps = {
 export default function Modal({ show, handleClose, children }: ModalProps) {
   const showHideClassName = show ? "display-block" : "display-none";
   return (
-    <div className={showHideClassName}>
+    <div
+      className={showHideClassName}
+      onKeyDownCapture={(e) => {
+        if (e.key === "Escape") {
+          handleClose();
+        }
+      }}
+    >
       <div className="modal" onClick={handleClose} />
       <section className="modal-main">
         {children}
