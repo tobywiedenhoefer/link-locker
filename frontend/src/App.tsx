@@ -1,7 +1,9 @@
 import { Outlet } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 
 import Navbar from "./components/Navbar/Navbar";
 
+import "react-toastify/ReactToastify.css";
 import "./App.css";
 
 function App() {
@@ -9,6 +11,7 @@ function App() {
     <div className="App">
       <Navbar />
       <Outlet />
+      <ToastContainer />
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 import FormInputRow from "../../components/FormInputRow/FormInputRow";
 import SubmitButton from "../../components/SubmitButton/SubmitButton";
@@ -53,6 +54,14 @@ export default function Login(_: LoginProps) {
           break;
         }
         case SubmissionWorkflow.failure: {
+          toast.error(
+            "Could not login! Please check your credentials and try again.",
+            {
+              position: "bottom-right",
+              draggable: true,
+            }
+          );
+          setWorkflow(SubmissionWorkflow.default);
           break;
         }
       }

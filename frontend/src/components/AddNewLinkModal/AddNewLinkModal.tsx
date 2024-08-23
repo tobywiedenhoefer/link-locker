@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 import Modal, { ModalProps } from "../Modal/Modal";
 import FormInputRow from "../FormInputRow/FormInputRow";
@@ -47,6 +48,9 @@ export default function AddNewLinkModal(props: AddNewLinkModalProps) {
           if (resp.success) {
             props.handleSubmit({ ...newLink, id: resp.payload });
             setWorkflow(SubmissionWorkflow.default);
+            toast.success("Success!", {
+              position: "top-center",
+            });
             props.handleClose();
           } else {
             setWorkflow(SubmissionWorkflow.failure);
