@@ -1,6 +1,11 @@
 import "./SubmitButton.css";
+import "../../shared/loading.css";
 
-type SubmitButtonProps = { disabled: boolean; handleSubmit: () => void };
+type SubmitButtonProps = {
+  disabled: boolean;
+  handleSubmit: () => void;
+  isLoading?: boolean;
+};
 export default function SubmitButton(props: SubmitButtonProps) {
   return (
     <div className="submit-button-wrapper">
@@ -14,7 +19,13 @@ export default function SubmitButton(props: SubmitButtonProps) {
           }
         }}
       >
-        Submit
+        {!props.isLoading ? (
+          "Submit"
+        ) : (
+          <div className="button-loading-container">
+            <div className="button-loading-spinner" />
+          </div>
+        )}
       </button>
     </div>
   );
