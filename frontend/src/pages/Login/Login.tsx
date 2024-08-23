@@ -106,11 +106,14 @@ export default function Login(_: LoginProps) {
         </div>
         <SubmitButton
           disabled={
-            formFields.username.length < 2 || formFields.password.length < 8
+            formFields.username.length < 2 ||
+            formFields.password.length < 8 ||
+            workflow === SubmissionWorkflow.submitting
           }
           handleSubmit={() => {
             setWorkflow(SubmissionWorkflow.submitting);
           }}
+          isLoading={workflow === SubmissionWorkflow.submitting}
         />
         <div className="no-account-text">
           <span>
