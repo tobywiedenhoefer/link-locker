@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 import { addNewLocker } from "../../store/data.store";
 
@@ -15,6 +16,7 @@ import {
   DEFAULT_ADD_LOCKER_FORM_FIELDS as DEFAULT_FORM_FIELDS,
   DEFAULT_ADD_LOCKER_VALIDATORS as DEFAULT_VALIDATORS,
 } from "../../constants/defaults";
+import SubmissionWorkflow from "../../constants/submissionWorkflows";
 
 import "./AddLockerModal.css";
 
@@ -29,7 +31,7 @@ export default function AddLockerModal(props: AddLockerModalProps) {
   );
   useEffect(() => {
     (async () => {
-    switch (workflow) {
+      switch (workflow) {
         case SubmissionWorkflow.submitting: {
           const newLocker: Locker = {
             id: -1,
@@ -42,6 +44,10 @@ export default function AddLockerModal(props: AddLockerModalProps) {
           if (resp.success) {
             props.handleSubmit(newLocker);
             setWorkflow(SubmissionWorkflow.default);
+            toast.success("Success!", {
+              position: "bottom-right",
+              draggable: true,
+            });
             props.handleClose();
           } else {
             setWorkflow(SubmissionWorkflow.failure);
@@ -49,9 +55,12 @@ export default function AddLockerModal(props: AddLockerModalProps) {
           break;
         }
         case SubmissionWorkflow.failure: {
+          toast.error("Could not add locker! Please try again later.", {
+            position: "bottom-right",
+            draggable: true,
           });
+        }
       }
-    }
     })();
   }, [workflow]);
   const handleSetFormFields = (k: keyof FormFields, v: string) => {
