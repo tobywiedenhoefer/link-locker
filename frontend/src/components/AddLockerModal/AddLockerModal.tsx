@@ -59,6 +59,8 @@ export default function AddLockerModal(props: AddLockerModalProps) {
             position: "bottom-right",
             draggable: true,
           });
+          setWorkflow(SubmissionWorkflow.default);
+          break;
         }
       }
     })();
