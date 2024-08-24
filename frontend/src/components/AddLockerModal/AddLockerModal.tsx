@@ -24,13 +24,13 @@ type AddLockerModalProps = {
 export default function AddLockerModal(props: AddLockerModalProps) {
   const [formFields, setFormFields] = useState<FormFields>(DEFAULT_FORM_FIELDS);
   const [validators, setValidators] = useState<Validators>(DEFAULT_VALIDATORS);
-  const [workflow, setWorkflow] = useState<
-    null | "submitting" | "success" | "failure"
-  >(null);
+  const [workflow, setWorkflow] = useState<SubmissionWorkflow>(
+    SubmissionWorkflow.default
+  );
   useEffect(() => {
+    (async () => {
     switch (workflow) {
-      case "submitting": {
-        (async () => {
+        case SubmissionWorkflow.submitting: {
           const newLocker: Locker = {
             id: -1,
             name: formFields.name,
@@ -41,12 +41,18 @@ export default function AddLockerModal(props: AddLockerModalProps) {
           const resp = await addNewLocker(newLocker);
           if (resp.success) {
             props.handleSubmit(newLocker);
-            setWorkflow(null);
+            setWorkflow(SubmissionWorkflow.default);
             props.handleClose();
+          } else {
+            setWorkflow(SubmissionWorkflow.failure);
           }
-        })();
+          break;
+        }
+        case SubmissionWorkflow.failure: {
+          });
       }
     }
+    })();
   }, [workflow]);
   const handleSetFormFields = (k: keyof FormFields, v: string) => {
     setFormFields({
@@ -65,7 +71,7 @@ export default function AddLockerModal(props: AddLockerModalProps) {
       formFields.name &&
       (!formFields.locked || (formFields.locked && formFields.combination))
     ) {
-      setWorkflow("submitting");
+      setWorkflow(SubmissionWorkflow.submitting);
     }
   };
   const handleRadioOnChange = (isLocked: boolean) => {
