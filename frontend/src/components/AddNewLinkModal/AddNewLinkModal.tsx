@@ -34,9 +34,9 @@ export default function AddNewLinkModal(props: AddNewLinkModalProps) {
   );
   const [validators, setValidators] = useState<Validators>(DEFAULT_VALIDATORS);
   useEffect(() => {
-    switch (workflow) {
-      case SubmissionWorkflow.submitting: {
-        (async () => {
+    (async () => {
+      switch (workflow) {
+        case SubmissionWorkflow.submitting: {
           const newLink: Link = {
             id: -1,
             name: formFields.name,
@@ -54,14 +54,17 @@ export default function AddNewLinkModal(props: AddNewLinkModalProps) {
           } else {
             setWorkflow(SubmissionWorkflow.failure);
           }
-        })();
-        break;
+          break;
+        }
+        case SubmissionWorkflow.failure: {
+          toast.error("Could not add link! Please try again later.", {
+            position: "bottom-right",
+            draggable: true,
+          });
+          break;
+        }
       }
-      case SubmissionWorkflow.failure: {
-        // TODO: ADD FAILURE WORKFLOW
-        break;
-      }
-    }
+    })()
   }, [workflow]);
   const handleSetFormFields = (k: keyof FormFields, v: string) => {
     setFormFields({ ...formFields, [k]: v });
