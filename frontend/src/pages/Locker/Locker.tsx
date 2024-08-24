@@ -7,7 +7,7 @@ import ApiResponse from "../../types/apiResponse.type";
 import LockerState from "../../types/lockerState.type";
 import { filterLinkSubstring } from "../../shared/filterSearch";
 import { ErrorCodes } from "../../shared/errors";
-import SubmissionWorkflow from "../../constants/submissionWorkflows";
+import { default as swf } from "../../constants/submissionWorkflows";
 
 import LinkCard from "../../components/LinkCard/LinkCard";
 import SearchBar from "../../components/SearchBar/SearchBar";
@@ -27,9 +27,7 @@ export default function Locker() {
   const [showModal, setShowModal] = useState(false);
   const [selectedLink, setSelectedLink] = useState<Link | null>();
   const [editStatus, setEditStatus] = useState<"edit" | "view">("view");
-  const [workflow, setWorkflow] = useState<SubmissionWorkflow>(
-    SubmissionWorkflow.default
-  );
+  const [workflow, setWorkflow] = useState<swf>(swf.default);
   const handleModalClose = () => {
     setShowModal(false);
     setSelectedLink(null);
@@ -38,7 +36,7 @@ export default function Locker() {
     (async () => {
       const state: LockerState | null | undefined = location.state;
       switch (workflow) {
-        case SubmissionWorkflow.default: {
+        case swf.default: {
           const lockerId = params?.locker ? +params.locker : NaN;
           let resp: ApiResponse<Link[]>;
           if (!state) {
@@ -48,14 +46,14 @@ export default function Locker() {
           }
           if (resp.success) {
             setLinks(resp.payload);
-            setWorkflow(SubmissionWorkflow.success);
+            setWorkflow(swf.success);
           } else if (resp.errorCode === ErrorCodes.CacheExpiredOrNotSet) {
             navigate("/logout", { replace: true });
           } else if (resp.errorCode === ErrorCodes.CouldNotFindLockers) {
             navigate("/", { replace: true });
           } else {
             console.log("error: ", resp);
-            setWorkflow(SubmissionWorkflow.failure);
+            setWorkflow(swf.failure);
           }
           break;
         }
@@ -74,7 +72,7 @@ export default function Locker() {
         />
       </div>
       <div className="link-cards-container">
-        {workflow !== SubmissionWorkflow.default ? (
+        {workflow !== swf.default ? (
           links
             .filter((link) => filterLinkSubstring(link, searchTerm))
             .map((link) => {

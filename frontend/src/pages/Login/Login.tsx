@@ -14,7 +14,7 @@ import {
   DEFAULT_LOGIN_FORM_FIELDS as DEFAULT_FORM_FIELDS,
   DEFAULT_LOGIN_VALIDATORS as DEFAULT_VALIDATORS,
 } from "../../constants/defaults";
-import SubmissionWorkflow from "../../constants/submissionWorkflows";
+import { default as swf } from "../../constants/submissionWorkflows";
 
 import { useAuth } from "../../contexts/AuthContext";
 import { authenticateLogin } from "../../store/data.store";
@@ -28,32 +28,30 @@ export default function Login(_: LoginProps) {
   const navigate = useNavigate();
   const [formFields, setFormFields] = useState<FormFields>(DEFAULT_FORM_FIELDS);
   const [validators, setValidators] = useState<Validators>(DEFAULT_VALIDATORS);
-  const [workflow, setWorkflow] = useState<SubmissionWorkflow>(
-    SubmissionWorkflow.default
-  );
+  const [workflow, setWorkflow] = useState<swf>(swf.default);
   const [auth, setAuth] = useState<string>("");
   useEffect(() => {
     (async () => {
       switch (workflow) {
-        case SubmissionWorkflow.submitting: {
+        case swf.submitting: {
           const resp = await authenticateLogin(
             formFields.username,
             formFields.password
           );
           if (resp.success && resp.payload) {
             setAuth(resp.payload);
-            setWorkflow(SubmissionWorkflow.success);
+            setWorkflow(swf.success);
           } else {
-            setWorkflow(SubmissionWorkflow.failure);
+            setWorkflow(swf.failure);
           }
           break;
         }
-        case SubmissionWorkflow.success: {
+        case swf.success: {
           updateToken(auth);
-          setWorkflow(SubmissionWorkflow.default);
+          setWorkflow(swf.default);
           break;
         }
-        case SubmissionWorkflow.failure: {
+        case swf.failure: {
           toast.error(
             "Could not login! Please check your credentials and try again.",
             {
@@ -61,7 +59,7 @@ export default function Login(_: LoginProps) {
               draggable: true,
             }
           );
-          setWorkflow(SubmissionWorkflow.default);
+          setWorkflow(swf.default);
           break;
         }
       }
@@ -108,12 +106,12 @@ export default function Login(_: LoginProps) {
           disabled={
             formFields.username.length < 2 ||
             formFields.password.length < 8 ||
-            workflow === SubmissionWorkflow.submitting
+            workflow === swf.submitting
           }
           handleSubmit={() => {
-            setWorkflow(SubmissionWorkflow.submitting);
+            setWorkflow(swf.submitting);
           }}
-          isLoading={workflow === SubmissionWorkflow.submitting}
+          isLoading={workflow === swf.submitting}
         />
         <div className="no-account-text">
           <span>

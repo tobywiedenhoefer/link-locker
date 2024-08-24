@@ -8,7 +8,7 @@ import {
   CombinationFormFields as FormFields,
   CombinationValidators as Validators,
 } from "../../types/formTypes.type";
-import SubmissionWorkflow from "../../constants/submissionWorkflows";
+import { default as swf } from "../../constants/submissionWorkflows";
 
 import { getLockedLocker } from "../../store/data.store";
 import { getExpiryDate } from "../../store/date.store";
@@ -28,29 +28,29 @@ export default function SearchLockedLockersModal(
   const navigate = useNavigate();
   const [formFields, setFormFields] = useState<FormFields>(DEFAULT_FORM_FIELDS);
   const [validators, setValidators] = useState<Validators>(DEFAULT_VALIDATORS);
-  const [workflow, setWorkflow] = useState<SubmissionWorkflow>(
-    SubmissionWorkflow.default
+  const [workflow, setWorkflow] = useState<swf>(
+    swf.default
   );
   const [nextLocker, setNextLocker] = useState<number | undefined>();
 
   useEffect(() => {
     switch (workflow) {
-      case SubmissionWorkflow.submitting: {
+      case swf.submitting: {
         (async () => {
           const res = await getLockedLocker(formFields.combination);
           if (res.success) {
             setNextLocker(res.payload);
-            setWorkflow(SubmissionWorkflow.success);
+            setWorkflow(swf.success);
           } else {
-            setWorkflow(SubmissionWorkflow.failure);
+            setWorkflow(swf.failure);
           }
         })();
         break;
       }
-      case SubmissionWorkflow.failure: {
+      case swf.failure: {
         break;
       }
-      case SubmissionWorkflow.success: {
+      case swf.success: {
         const lockerState: LockerState = {
           date: getExpiryDate("locker"),
           combination: formFields.combination,
@@ -63,7 +63,7 @@ export default function SearchLockedLockersModal(
 
   const handleSubmit = () => {
     if (formFields.combination) {
-      setWorkflow(SubmissionWorkflow.submitting);
+      setWorkflow(swf.submitting);
     }
   };
   const handleInputOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {

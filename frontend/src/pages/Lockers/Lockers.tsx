@@ -9,31 +9,29 @@ import Locker from "../../types/locker.type";
 
 import { getLockers } from "../../store/data.store";
 import { ErrorCodes } from "../../shared/errors";
-import SubmissionWorkflow from "../../constants/submissionWorkflows";
+import { default as swf } from "../../constants/submissionWorkflows";
 
 import "./Lockers.css";
 import "../../shared/loading.css";
 
 export default function Lockers() {
   const [lockers, setLockers] = useState<Array<Locker>>([]);
-  const [workflow, setWorkflow] = useState<SubmissionWorkflow>(
-    SubmissionWorkflow.default
-  );
+  const [workflow, setWorkflow] = useState<swf>(swf.default);
   const navigate = useNavigate();
   useEffect(() => {
     (async () => {
       switch (workflow) {
-        case SubmissionWorkflow.default: {
+        case swf.default: {
           const resp = await getLockers();
           if (resp.success) {
             setLockers(resp.payload);
-            setWorkflow(SubmissionWorkflow.success);
+            setWorkflow(swf.success);
           } else if (resp.errorCode === ErrorCodes.CacheExpiredOrNotSet) {
             console.log("Cache not set, logging out...");
             navigate("/logout");
           } else {
             console.error("unknown error:", resp);
-            setWorkflow(SubmissionWorkflow.failure);
+            setWorkflow(swf.failure);
           }
           break;
         }
@@ -45,7 +43,7 @@ export default function Lockers() {
   };
   return (
     <div className="locker-cards">
-      {workflow === SubmissionWorkflow.success ? (
+      {workflow === swf.success ? (
         lockers.map((locker) => {
           return <LockerCard key={locker.id} locker={locker} />;
         })

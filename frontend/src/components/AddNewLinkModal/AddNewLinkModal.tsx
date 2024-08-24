@@ -13,7 +13,7 @@ import {
   AddNewLinkValidators as Validators,
 } from "../../types/formTypes.type";
 
-import SubmissionWorkflow from "../../constants/submissionWorkflows";
+import { default as swf } from "../../constants/submissionWorkflows";
 import {
   DEFAULT_ADD_NEW_LINK_FORM_FIELDS as DEFAULT_FORM_FIELDS,
   DEFAULT_ADD_NEW_LINK_VALIDATORS as DEFAULT_VALIDATORS,
@@ -29,14 +29,14 @@ type AddNewLinkModalProps = {
 
 export default function AddNewLinkModal(props: AddNewLinkModalProps) {
   const [formFields, setFormFields] = useState<FormFields>(DEFAULT_FORM_FIELDS);
-  const [workflow, setWorkflow] = useState<SubmissionWorkflow>(
-    SubmissionWorkflow.default
+  const [workflow, setWorkflow] = useState<swf>(
+    swf.default
   );
   const [validators, setValidators] = useState<Validators>(DEFAULT_VALIDATORS);
   useEffect(() => {
     (async () => {
       switch (workflow) {
-        case SubmissionWorkflow.submitting: {
+        case swf.submitting: {
           const newLink: Link = {
             id: -1,
             name: formFields.name,
@@ -46,17 +46,17 @@ export default function AddNewLinkModal(props: AddNewLinkModalProps) {
           const resp = await addNewLink(props.lockerId, newLink);
           if (resp.success) {
             props.handleSubmit({ ...newLink, id: resp.payload });
-            setWorkflow(SubmissionWorkflow.default);
+            setWorkflow(swf.default);
             toast.success("Success!", {
               position: "top-center",
             });
             props.handleClose();
           } else {
-            setWorkflow(SubmissionWorkflow.failure);
+            setWorkflow(swf.failure);
           }
           break;
         }
-        case SubmissionWorkflow.failure: {
+        case swf.failure: {
           toast.error("Could not add link! Please try again later.", {
             position: "bottom-right",
             draggable: true,
@@ -102,7 +102,7 @@ export default function AddNewLinkModal(props: AddNewLinkModalProps) {
   const handleSubmit = () => {
     // TODO: validate URL
     if (formFields.name && formFields.url) {
-      setWorkflow(SubmissionWorkflow.submitting);
+      setWorkflow(swf.submitting);
     }
   };
   return (

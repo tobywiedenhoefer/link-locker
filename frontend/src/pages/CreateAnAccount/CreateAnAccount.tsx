@@ -7,7 +7,7 @@ import {
   CreateAnAccountFormFields as FormFields,
   CreateAnAccountValidators as Validators,
 } from "../../types/formTypes.type";
-import SubmissionWorkflow from "../../constants/submissionWorkflows";
+import { default as swf } from "../../constants/submissionWorkflows";
 
 import {
   DEFAULT_CREATE_AN_ACCOUNT_FORM_FIELDS as DEFAULT_FORM_FIELDS,
@@ -27,31 +27,29 @@ export default function CreateAnAccount(_: CreateAnAccountProps) {
   const [formFields, setFormFields] = useState<FormFields>(DEFAULT_FORM_FIELDS);
   const [validators, setValidators] = useState<Validators>(DEFAULT_VALIDATORS);
   const [auth, setAuth] = useState<string>("");
-  const [workflow, setWorkflow] = useState<SubmissionWorkflow>(
-    SubmissionWorkflow.default
-  );
+  const [workflow, setWorkflow] = useState<swf>(swf.default);
   useEffect(() => {
     (async () => {
       switch (workflow) {
-        case SubmissionWorkflow.submitting: {
+        case swf.submitting: {
           const resp = await createAndAuthenticateLogin(
             formFields.username,
             formFields.password
           );
           if (resp.success) {
             setAuth(resp.payload);
-            setWorkflow(SubmissionWorkflow.success);
+            setWorkflow(swf.success);
           } else {
-            setWorkflow(SubmissionWorkflow.failure);
+            setWorkflow(swf.failure);
           }
           break;
         }
-        case SubmissionWorkflow.success: {
-          setWorkflow(SubmissionWorkflow.default);
+        case swf.success: {
+          setWorkflow(swf.default);
           updateToken(auth);
           break;
         }
-        case SubmissionWorkflow.failure: {
+        case swf.failure: {
           break;
         }
       }
@@ -111,7 +109,7 @@ export default function CreateAnAccount(_: CreateAnAccountProps) {
             !formFields.password ||
             formFields.password !== formFields.confirmPassword
           }
-          handleSubmit={() => setWorkflow(SubmissionWorkflow.submitting)}
+          handleSubmit={() => setWorkflow(swf.submitting)}
         />
         <div className="already-have-an-account-subtext">
           <span>

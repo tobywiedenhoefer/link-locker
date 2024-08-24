@@ -16,7 +16,7 @@ import {
   DEFAULT_ADD_LOCKER_FORM_FIELDS as DEFAULT_FORM_FIELDS,
   DEFAULT_ADD_LOCKER_VALIDATORS as DEFAULT_VALIDATORS,
 } from "../../constants/defaults";
-import SubmissionWorkflow from "../../constants/submissionWorkflows";
+import { default as swf } from "../../constants/submissionWorkflows";
 
 import "./AddLockerModal.css";
 
@@ -26,13 +26,11 @@ type AddLockerModalProps = {
 export default function AddLockerModal(props: AddLockerModalProps) {
   const [formFields, setFormFields] = useState<FormFields>(DEFAULT_FORM_FIELDS);
   const [validators, setValidators] = useState<Validators>(DEFAULT_VALIDATORS);
-  const [workflow, setWorkflow] = useState<SubmissionWorkflow>(
-    SubmissionWorkflow.default
-  );
+  const [workflow, setWorkflow] = useState<swf>(swf.default);
   useEffect(() => {
     (async () => {
       switch (workflow) {
-        case SubmissionWorkflow.submitting: {
+        case swf.submitting: {
           const newLocker: Locker = {
             id: -1,
             name: formFields.name,
@@ -43,23 +41,23 @@ export default function AddLockerModal(props: AddLockerModalProps) {
           const resp = await addNewLocker(newLocker);
           if (resp.success) {
             props.handleSubmit(newLocker);
-            setWorkflow(SubmissionWorkflow.default);
+            setWorkflow(swf.default);
             toast.success("Success!", {
               position: "bottom-right",
               draggable: true,
             });
             props.handleClose();
           } else {
-            setWorkflow(SubmissionWorkflow.failure);
+            setWorkflow(swf.failure);
           }
           break;
         }
-        case SubmissionWorkflow.failure: {
+        case swf.failure: {
           toast.error("Could not add locker! Please try again later.", {
             position: "bottom-right",
             draggable: true,
           });
-          setWorkflow(SubmissionWorkflow.default);
+          setWorkflow(swf.default);
           break;
         }
       }
@@ -82,7 +80,7 @@ export default function AddLockerModal(props: AddLockerModalProps) {
       formFields.name &&
       (!formFields.locked || (formFields.locked && formFields.combination))
     ) {
-      setWorkflow(SubmissionWorkflow.submitting);
+      setWorkflow(swf.submitting);
     }
   };
   const handleRadioOnChange = (isLocked: boolean) => {
