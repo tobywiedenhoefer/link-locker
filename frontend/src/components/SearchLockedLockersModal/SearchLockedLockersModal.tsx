@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import { toast } from "react-toastify";
 
 import Modal, { ModalProps } from "../Modal/Modal";
 
@@ -28,9 +29,7 @@ export default function SearchLockedLockersModal(
   const navigate = useNavigate();
   const [formFields, setFormFields] = useState<FormFields>(DEFAULT_FORM_FIELDS);
   const [validators, setValidators] = useState<Validators>(DEFAULT_VALIDATORS);
-  const [workflow, setWorkflow] = useState<swf>(
-    swf.default
-  );
+  const [workflow, setWorkflow] = useState<swf>(swf.default);
   const [nextLocker, setNextLocker] = useState<number | undefined>();
 
   useEffect(() => {
@@ -48,6 +47,13 @@ export default function SearchLockedLockersModal(
         break;
       }
       case swf.failure: {
+        toast.error(
+          "There was a problem with the entered combination. Try again or make another locked locker.",
+          {
+            position: "bottom-right",
+            draggable: true,
+          }
+        );
         break;
       }
       case swf.success: {
