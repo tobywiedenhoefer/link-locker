@@ -11,6 +11,7 @@ type FormInputRowProps<T, U> = {
   formFields: T & BaseFormFields;
   setValidators: (k: keyof U, v: string) => void;
   setFormFields: (k: keyof T, v: string) => void;
+  handleInputOnBlur?: (k: keyof T & keyof U, v: string) => void;
   required?: boolean;
   onKeyUp?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   isPassword?: boolean;
@@ -24,7 +25,11 @@ export default function FormInputRow<T, U>(props: FormInputRowProps<T, U>) {
     props.setValidators(k, e.target.value);
   };
   const handleInputOnBlur = (k: keyof T & keyof U, v: string) => {
-    props.setValidators(k, v);
+    if (props.handleInputOnBlur) {
+      props.handleInputOnBlur(k, v);
+    } else {
+      props.setValidators(k, v);
+    }
   };
   const getStyle = (type: "border" | "label") => {
     const errorColor = "#ff7575";
