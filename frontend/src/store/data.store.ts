@@ -277,3 +277,26 @@ export async function createAndAuthenticateLogin(
     };
   }
 }
+
+export async function isUsernameAvailable(
+  username: string
+): Promise<ApiResponse<boolean>> {
+  if (mockData.use) {
+    return {
+      success: true,
+      payload: true,
+    };
+  }
+  try {
+    const usernameAvailable = await api
+      .post("username-available", { json: { username: username } })
+      .json<ApiResponse<boolean>>();
+    return usernameAvailable;
+  } catch (e) {
+    return {
+      success: false,
+      errorCode: ErrorCodes.UnexpectedErrorRaisedDuringDBCall,
+      errorMessage: `Error raised: ${e}`,
+    };
+  }
+}
