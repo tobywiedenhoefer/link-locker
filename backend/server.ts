@@ -7,6 +7,7 @@ import { createUserRoutes } from "./routes/create-user.ts";
 import { userRoutes } from "./routes/user.ts";
 import { lockersRoutes } from "./routes/lockers.ts";
 import { tokenRoutes } from "./routes/token.ts";
+import { usernameAvailableRoute } from "./routes/username-available.ts";
 
 import verifyBearerToken from "./verifyBearerToken.ts";
 
@@ -32,6 +33,7 @@ app.use(async (req, res, next) => {
 
 app.use("/api/links", linksRoutes);
 app.use("/api/create-user", createUserRoutes);
+app.use("/api/username-available", usernameAvailableRoute);
 app.use("/api/user/", userRoutes);
 app.use("/api/lockers/", lockersRoutes);
 app.use("/api/token/", tokenRoutes);
