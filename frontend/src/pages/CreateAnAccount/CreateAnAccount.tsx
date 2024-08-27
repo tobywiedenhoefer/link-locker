@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 import FormInputRow from "../../components/FormInputRow/FormInputRow";
 
@@ -18,6 +19,7 @@ import "./CreateAnAccount.css";
 import "../../shared/form.css";
 import SubmitButton from "../../components/SubmitButton/SubmitButton";
 import { createAndAuthenticateLogin } from "../../store/data.store";
+import { isUsernameAvailable } from "../../store/data.store";
 import { useAuth } from "../../contexts/AuthContext";
 
 type CreateAnAccountProps = {};
@@ -50,6 +52,7 @@ export default function CreateAnAccount(_: CreateAnAccountProps) {
           break;
         }
         case swf.failure: {
+          toast.error("Could not create an account. Please try again ");
           break;
         }
       }
@@ -68,6 +71,29 @@ export default function CreateAnAccount(_: CreateAnAccountProps) {
       [k]: { touched: true, valid: v.length > minValidLength },
     });
   };
+  const handleUsernameValidationOnBlur = (k: keyof Validators, v: string) => {
+    if (k !== "username") return;
+    isUsernameAvailable(v)
+      .then((res) => {
+        if (!res.success || (res.success && !res.payload)) {
+          toast.error(
+            `Username ${v} may already be taken! Please try another.`,
+            {
+              position: "bottom-right",
+              draggable: true,
+            }
+          );
+          return false;
+        }
+        return true;
+      })
+      .then((valid) => {
+        setValidators({
+          ...validators,
+          [k]: { touched: true, valid: valid },
+        });
+      });
+  };
   return (
     <div className="create-an-account-form-container">
       <div className="create-an-account-form">
@@ -80,6 +106,7 @@ export default function CreateAnAccount(_: CreateAnAccountProps) {
             formFields={formFields}
             setValidators={handleSetValidators}
             setFormFields={handleSetFormFields}
+            handleInputOnBlur={handleUsernameValidationOnBlur}
             required
           />
           <FormInputRow
