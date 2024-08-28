@@ -52,7 +52,6 @@ export default function Locker() {
           } else if (resp.errorCode === ErrorCodes.CouldNotFindLockers) {
             navigate("/", { replace: true });
           } else {
-            console.log("error: ", resp);
             setWorkflow(swf.failure);
           }
           break;
