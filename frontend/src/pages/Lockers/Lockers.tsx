@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 import LockerCard from "../../components/LockerCard/LockerCard";
 import SearchLockedLockersButton from "../../components/SearchLockedLockersButton/SearchLockedLockersButton";
@@ -27,12 +28,25 @@ export default function Lockers() {
             setLockers(resp.payload);
             setWorkflow(swf.success);
           } else if (resp.errorCode === ErrorCodes.CacheExpiredOrNotSet) {
-            console.log("Cache not set, logging out...");
+            toast.error("Session timed out, logging out...", {
+              position: "bottom-right",
+              draggable: true,
+            });
             navigate("/logout");
           } else {
-            console.error("unknown error:", resp);
             setWorkflow(swf.failure);
           }
+          break;
+        }
+        case swf.failure: {
+          toast.error(
+            "An unknown error has occurred. Please try again later.",
+            {
+              position: "bottom-right",
+              draggable: true,
+            }
+          );
+          setWorkflow(swf.default);
           break;
         }
       }
