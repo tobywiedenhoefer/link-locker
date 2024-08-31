@@ -83,6 +83,7 @@ export default function Locker() {
                     setSelectedLink(link);
                     setShowModal(true);
                   }}
+                  removeable={editStatus === "edit"}
                 />
               );
             })
