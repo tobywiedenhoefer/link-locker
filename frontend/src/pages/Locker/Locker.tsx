@@ -28,6 +28,7 @@ export default function Locker() {
   const [selectedLink, setSelectedLink] = useState<Link | null>();
   const [editStatus, setEditStatus] = useState<"edit" | "view">("view");
   const [workflow, setWorkflow] = useState<swf>(swf.default);
+  const [removedLinkId, setRemovedLinkId] = useState<Link["id"]>(-1);
   const handleModalClose = () => {
     setShowModal(false);
     setSelectedLink(null);
@@ -59,6 +60,12 @@ export default function Locker() {
       }
     })();
   }, [links, workflow]);
+  useEffect(() => {
+    if (removedLinkId > 0) {
+      setLinks(links.filter((link) => link.id !== removedLinkId));
+      setRemovedLinkId(-1);
+    }
+  }, [removedLinkId]);
   return (
     <>
       <div className="search-bar-row">
@@ -83,6 +90,7 @@ export default function Locker() {
                     setSelectedLink(link);
                     setShowModal(true);
                   }}
+                  removeLinkId={setRemovedLinkId}
                   removeable={editStatus === "edit"}
                 />
               );
