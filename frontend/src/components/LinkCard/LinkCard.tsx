@@ -1,13 +1,19 @@
 import { useEffect, useState } from "react";
-import { IconCheck, IconX } from "@tabler/icons-react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { IconX } from "@tabler/icons-react";
 
 import Link from "../../types/link.type";
 import LinkTags from "../LinkTags/LinkTags";
 
+import { removeLink } from "../../store/data.store";
+import { ErrorCodes } from "../../shared/errors";
+
 import { default as swf } from "../../constants/submissionWorkflows";
 
 import "./LinkCard.css";
+import "../../shared/loading.css";
+import LinkRemovalButtonRow from "../LinkRemovalButtonRow/LinkRemovalButtonRow";
 
 type LinkCardProps = {
   link: Link;
@@ -23,6 +29,7 @@ export default function LinkCard({
 }: LinkCardProps) {
   const [showConfirmRemove, setShowConfirmRemove] = useState<boolean>(false);
   const [workflow, setWorkflow] = useState<swf>(swf.default);
+  const navigate = useNavigate();
   useEffect(() => {
     if (!removeable) {
       setShowConfirmRemove(false);
@@ -32,7 +39,21 @@ export default function LinkCard({
     (async () => {
       switch (workflow) {
         case swf.submitting: {
-          setWorkflow(swf.success);
+          const linkRemoved = await removeLink(link.id);
+          console.log("response", linkRemoved);
+          if (linkRemoved.success) {
+            setWorkflow(swf.success);
+          } else if (
+            linkRemoved.errorCode === ErrorCodes.CacheExpiredOrNotSet
+          ) {
+            toast.error("Session expired, please log in again.", {
+              position: "top-center",
+              draggable: true,
+            });
+            navigate("/", { replace: true });
+          } else {
+            setWorkflow(swf.failure);
+          }
           break;
         }
         case swf.success: {
@@ -44,7 +65,6 @@ export default function LinkCard({
           break;
         }
         case swf.failure: {
-          setWorkflow(swf.default);
           toast.error(
             "Link could not be removed right now. Please try again later.",
             {
@@ -52,6 +72,8 @@ export default function LinkCard({
               draggable: true,
             }
           );
+          setWorkflow(swf.default);
+          setShowConfirmRemove(false);
           break;
         }
       }
@@ -66,20 +88,11 @@ export default function LinkCard({
         {showConfirmRemove ? "Remove?" : link.name}
       </div>
       {showConfirmRemove ? (
-        <div className="removal-confirmation-buttons-row">
-          <div
-            className="confirm-removal-button"
-            onClick={() => setWorkflow(swf.submitting)}
-          >
-            <IconCheck size={24} />
-          </div>
-          <div
-            className="confirm-removal-button"
-            onClick={() => setShowConfirmRemove(false)}
-          >
-            <IconX size={24} />
-          </div>
-        </div>
+        <LinkRemovalButtonRow
+          workflow={workflow}
+          exitRemovalWorkflow={() => setShowConfirmRemove(false)}
+          enterSubmittingWorkflow={() => setWorkflow(swf.submitting)}
+        />
       ) : (
         <LinkTags tags={link.tags} />
       )}

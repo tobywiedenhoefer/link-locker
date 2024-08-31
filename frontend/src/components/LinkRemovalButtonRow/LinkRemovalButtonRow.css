@@ -1,0 +1,25 @@
+.removal-confirmation-buttons-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  height: 70%;
+  gap: 2rem;
+}
+.confirm-removal-button {
+  background-color: #e0e0e0;
+  border-radius: 100%;
+  height: 35px;
+  width: 35px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.confirm-removal-button:hover {
+  transform: translateY(-2px);
+}
+
+.confirm-removal-button:active {
+  background-color: #fff;
+}
