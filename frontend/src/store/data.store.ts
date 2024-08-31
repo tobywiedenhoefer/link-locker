@@ -300,3 +300,26 @@ export async function isUsernameAvailable(
     };
   }
 }
+
+export async function removeLink(
+  linkId: number
+): Promise<ApiResponse<undefined>> {
+  if (mockData.use) {
+    return {
+      success: true,
+      payload: undefined,
+    };
+  }
+  try {
+    const linkRemoved = await api
+      .post("links/unlink", { json: { linkId: linkId } })
+      .json<ApiResponse<undefined>>();
+    return linkRemoved;
+  } catch (e) {
+    return {
+      success: false,
+      errorCode: ErrorCodes.CouldNotUnlink,
+      errorMessage: `Could not unlink: ${e}`,
+    };
+  }
+}
