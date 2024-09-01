@@ -79,6 +79,7 @@ export default function Login(_: LoginProps) {
       [k]: { touched: true, valid: v.length > minLength },
     });
   };
+  const handleSubmit = () => setWorkflow(swf.submitting);
   return (
     <div className="login-form-container">
       <div className="login-form">
@@ -91,6 +92,7 @@ export default function Login(_: LoginProps) {
             formFields={formFields}
             setValidators={handleSetValidators}
             setFormFields={handleSetFormFields}
+            handleSubmit={handleSubmit}
           />
           <FormInputRow
             title={"Password"}
@@ -99,6 +101,7 @@ export default function Login(_: LoginProps) {
             formFields={formFields}
             setValidators={handleSetValidators}
             setFormFields={handleSetFormFields}
+            handleSubmit={handleSubmit}
             isPassword
           />
         </div>
@@ -108,9 +111,7 @@ export default function Login(_: LoginProps) {
             formFields.password.length < 8 ||
             workflow === swf.submitting
           }
-          handleSubmit={() => {
-            setWorkflow(swf.submitting);
-          }}
+          handleSubmit={handleSubmit}
           isLoading={workflow === swf.submitting}
         />
         <div className="no-account-text">
