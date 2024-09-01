@@ -14,6 +14,7 @@ type FormInputRowProps<T, U> = {
   handleInputOnBlur?: (k: keyof T & keyof U, v: string) => void;
   required?: boolean;
   onKeyUp?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  handleSubmit?: () => void;
   isPassword?: boolean;
 };
 export default function FormInputRow<T, U>(props: FormInputRowProps<T, U>) {
@@ -29,6 +30,12 @@ export default function FormInputRow<T, U>(props: FormInputRowProps<T, U>) {
       props.handleInputOnBlur(k, v);
     } else {
       props.setValidators(k, v);
+    }
+  };
+  const handleOnKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && typeof props.handleSubmit !== "undefined") {
+      e.preventDefault();
+      props.handleSubmit();
     }
   };
   const getStyle = (type: "border" | "label") => {
@@ -62,6 +69,7 @@ export default function FormInputRow<T, U>(props: FormInputRowProps<T, U>) {
           onBlur={(e) => handleInputOnBlur(props.keyName, e.target.value)}
           style={!!props.required ? getStyle("border") : {}}
           onKeyUp={!!props.onKeyUp ? props.onKeyUp : undefined}
+          onKeyDown={handleOnKeyDown}
           type={props.isPassword ? "password" : "text"}
         />
         {!!props.required ? (
