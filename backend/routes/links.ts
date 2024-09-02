@@ -3,7 +3,7 @@ import { Router } from "express";
 import ApiResponse from "../types/ApiResponse.type";
 import Link from "../types/link.type";
 import { ErrorCodes } from "../constants/errors";
-import { addLink, getLinksByLockerId } from "../src/db/queries/links";
+import { addLink, getLinksByLockerId, unlink } from "../src/db/queries/links";
 import { addTagsByLinkId, getTagsByLinkId } from "../src/db/queries/tags";
 
 const router = Router();
@@ -61,7 +61,7 @@ router.get("/:id", async (req, res) => {
 
 router.post("/add", async (req, res) => {
   /**
-   * Passing the new locker object in the url, a new link is added and the new id is returned.
+   * Passing the new link object in the url, a new link is added and the new id is returned.
    * Request body: {
    *   url: string,
    *   name: string,
@@ -136,6 +136,61 @@ router.post("/add", async (req, res) => {
       success: false,
       errorCode: ErrorCodes.UnexpectedErrorRaised,
       errorMessage: `An unexpected error was raised while adding link into db: ${e}`,
+    };
+  }
+  res.json(resp);
+  return;
+});
+
+router.post("/unlink", async (req, res) => {
+  /**
+   * Passing the linkId, remove a link.
+   * Request body: {
+   *   linkId: number,
+   *   userId: number
+   * }
+   * Response: {
+   *   success: true,
+   *   payload: undefined
+   * } | {
+   *   success: false,
+   *   errorCode: number,
+   *   errorMessage: string
+   * }
+   */
+  let resp: ApiResponse<undefined>;
+  if (
+    typeof req.body.linkId !== "number" ||
+    typeof req.body.userId === "number"
+  ) {
+    resp = {
+      success: false,
+      errorCode: ErrorCodes.IncorrectRequest,
+      errorMessage: "Incorrect request format.",
+    };
+    res.json(resp);
+    return;
+  }
+  const linkId: number = req.body.linkId;
+  const userId: number = req.body.userId;
+  try {
+    const deletedIds = await unlink(linkId, userId);
+    console.info(
+      `Deleted link id ${linkId} for user id ${userId}: ${
+        deletedIds.length > 0
+      }`
+    );
+    resp = {
+      success: true,
+      payload: undefined,
+    };
+  } catch (e) {
+    const em = `Could not delete link: ${linkId} for user id ${userId}: ${e}`;
+    console.error(em);
+    resp = {
+      success: false,
+      errorCode: ErrorCodes.LinkDoesNotExist,
+      errorMessage: em,
     };
   }
   res.json(resp);

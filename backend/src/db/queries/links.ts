@@ -31,3 +31,10 @@ export async function addLink(locker: {
     .values(locker)
     .returning({ newLinkId: linksTable.id });
 }
+
+export async function unlink(linkId: number, userId: number) {
+  return await db
+    .delete(linksTable)
+    .where(and(eq(linksTable.id, linkId), eq(linksTable.user_id, userId)))
+    .returning({ id: linksTable.id });
+}
