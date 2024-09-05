@@ -12,6 +12,7 @@ export enum ErrorCodes {
   CacheExpiredOrNotSet = 11,
   IncorrectRequestFormat = 12,
   UsernameNotAvailable = 13,
+  CouldNotUnlink = 14,
   UnexpectedErrorRaisedDuringDBCall = 20,
 }
 
