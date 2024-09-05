@@ -46,7 +46,6 @@ export default function Lockers() {
               draggable: true,
             }
           );
-          setWorkflow(swf.default);
           break;
         }
       }
