@@ -161,7 +161,7 @@ router.post("/unlink", async (req, res) => {
   let resp: ApiResponse<undefined>;
   if (
     typeof req.body.linkId !== "number" ||
-    typeof req.body.userId === "number"
+    typeof req.body.userId !== "number"
   ) {
     resp = {
       success: false,
