@@ -1,8 +1,10 @@
+import Tag from "./tag.types";
+
 type Link = {
   id: number;
   url: string;
   name: string;
-  tags: Array<string>;
+  tags: Tag[];
 };
 
 export default Link;

@@ -4,7 +4,7 @@ import ApiResponse from "../types/ApiResponse.type";
 import Link from "../types/link.type";
 import { ErrorCodes } from "../constants/errors";
 import { addLink, getLinksByLockerId, unlink } from "../src/db/queries/links";
-import { addTagsByLinkId, getTagsByLinkId } from "../src/db/queries/tags";
+import { addTagsByLinkId } from "../src/db/queries/tags";
 
 const router = Router();
 

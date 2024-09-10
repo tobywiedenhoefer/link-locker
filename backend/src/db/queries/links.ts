@@ -2,6 +2,7 @@ import { and, eq, sql } from "drizzle-orm";
 
 import { db } from "../db";
 import { InsertLink, SelectLink, linksTable, tagsTable } from "../schema";
+import Tag from "../../../types/tag.types";
 
 export async function getLinksByLockerId(lockerId: SelectLink["locker_id"]) {
   return await db
@@ -10,8 +11,8 @@ export async function getLinksByLockerId(lockerId: SelectLink["locker_id"]) {
       name: linksTable.name,
       url: linksTable.url,
       tags: sql<
-        string[]
-      >`coalesce(array_agg(${tagsTable.name}) filter (where ${tagsTable.name} is not null), '{}')`,
+        Tag[]
+      >`coalesce(json_agg(json_build_object('id', ${tagsTable.id}, 'name', ${tagsTable.name})) filter (where ${tagsTable.name} is not null), '[]')`,
     })
     .from(linksTable)
     .where(eq(linksTable.locker_id, lockerId || -1))
