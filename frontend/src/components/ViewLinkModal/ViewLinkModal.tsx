@@ -29,9 +29,9 @@ export default function ViewLinkModal({
           <div className="view-modal-right">
             <h3>Tags</h3>
             <div className="tags-container">
-              {link.tags.map((tag, index) => (
-                <span key={index} className="tag">
-                  {tag}
+              {link.tags.map((tag) => (
+                <span key={tag.id} className="tag">
+                  {tag.name}
                 </span>
               ))}
             </div>

@@ -1,9 +1,10 @@
 import LinkTag from "../LinkTag/LinkTag";
+import Tag from "../../types/tag.type";
 
 import "./LinkTags.css";
 
 type LinkTagsProps = {
-  tags: string[];
+  tags: Tag[];
 };
 export default function LinkTags(props: LinkTagsProps) {
   return (
@@ -12,7 +13,7 @@ export default function LinkTags(props: LinkTagsProps) {
         if (ind > 4) {
           return;
         }
-        return <LinkTag key={`link-tag-${ind}`} name={tag} ind={ind} />;
+        return <LinkTag key={tag.id} name={tag.name} ind={ind} />;
       })}
     </div>
   );
